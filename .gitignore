@@ -29,7 +29,9 @@ nbdist/
 *.ear
 
 # Directorios y archivos específicos de Java Web
-# Mantener directorios WEB-INF necesarios
+!web/WEB-INF/
+!web/WEB-INF/lib/
+!web/WEB-INF/classes/
 
 # Logs y archivos temporales
 *.log
