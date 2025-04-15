@@ -43,9 +43,9 @@
                 opacity: 0.7;
             }
             @keyframes float {
-                0% { transform: translateY(0) rotate(0deg); }
-                50% { transform: translateY(-20px) rotate(5deg); }
-                100% { transform: translateY(0) rotate(0deg); }
+                0% { transform: translateY(0) rotate(0deg); 
+                50% { transform: translateY(-20px) rotate(5deg); 
+                100% { transform: translateY(0) rotate(0deg); 
             }
             .subtitle {
                 font-size: 1.5rem;
