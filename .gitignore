@@ -27,6 +27,10 @@ nbdist/
 *.war
 *.ear
 
+# Mantener carpeta Driver y sus archivos
+!src/java/*
+!src/java/Driver/*
+
 # Directorios y archivos específicos de Java Web
 !web/WEB-INF/
 !web/WEB-INF/lib/
