@@ -24,7 +24,6 @@ nbdist/
 *.class
 
 # Archivos de paquetes
-*.jar
 *.war
 *.ear
 
