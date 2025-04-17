@@ -1,212 +1,317 @@
-CREATE DATABASE IF NOT EXISTS sistema_academico;
-USE sistema_academico;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 17-04-2025 a las 03:37:13
+-- Versión del servidor: 9.1.0
+-- Versión de PHP: 8.3.14
 
--- Tabla ROL
-CREATE TABLE ROL (
-    id_rol INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) UNIQUE NOT NULL
-);
-
--- Tabla USUARIO
-CREATE TABLE USUARIO (
-    id_usu INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    correo VARCHAR(191) UNIQUE NOT NULL,
-    contraseña VARCHAR(64) NOT NULL,
-    id_rol INT NOT NULL,
-    fecha_creacion DATETIME NOT NULL,
-    ultima_conexion DATETIME,
-    FOREIGN KEY (id_rol) REFERENCES ROL(id_rol)
-);
-
--- Tabla PROFESOR
-CREATE TABLE PROFESOR (
-    id_profesor INT AUTO_INCREMENT PRIMARY KEY,
-    idUsuario INT NOT NULL,
-    fecha_nacimiento DATE,
-    direccion VARCHAR(255),
-    telefono VARCHAR(20),
-    grado_academico VARCHAR(255),
-    especializacion VARCHAR(255),
-    fecha_contratacion DATETIME,
-    estado ENUM('Activo', 'Baja') NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
-);
-
--- Tabla ESTUDIANTE
-CREATE TABLE ESTUDIANTE (
-    id_estudiante INT AUTO_INCREMENT PRIMARY KEY,
-    idUsuario INT NOT NULL,
-    fecha_nacimiento DATE,
-    direccion VARCHAR(255),
-    telefono VARCHAR(20),
-    numero_identificacion VARCHAR(50) UNIQUE,
-    estado ENUM('Activo', 'Inactivo') NOT NULL,
-    promedio_academico DECIMAL(5,2),
-    FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
-);
-
--- Tabla ADMINISTRADOR
-CREATE TABLE ADMINISTRADOR (
-    id_admin INT AUTO_INCREMENT PRIMARY KEY,
-    idUsuario INT NOT NULL,
-    departamento VARCHAR(255),
-    fecha_ingreso DATETIME,
-    FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
-);
-
--- Tabla CURSO
-CREATE TABLE CURSO (
-    id_curso INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    codigo VARCHAR(100) UNIQUE NOT NULL,
-    descripcion TEXT,
-    idProfesor INT,
-    FOREIGN KEY (idProfesor) REFERENCES PROFESOR(id_profesor) ON DELETE SET NULL
-);
-
--- Tabla CURSO_ESTUDIANTE
-CREATE TABLE CURSO_ESTUDIANTE (
-    id_curso INT NOT NULL,
-    id_estudiante INT NOT NULL,
-    PRIMARY KEY (id_curso, id_estudiante),
-    FOREIGN KEY (id_curso) REFERENCES CURSO(id_curso) ON DELETE CASCADE,
-    FOREIGN KEY (id_estudiante) REFERENCES ESTUDIANTE(id_estudiante) ON DELETE CASCADE
-);
-
--- Tabla ACTIVIDAD
-CREATE TABLE ACTIVIDAD (
-    id_actividad INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    enlace VARCHAR(255) NOT NULL
-);
-
--- Tabla GESTION_ACTIVIDADES
-CREATE TABLE GESTION_ACTIVIDADES (
-    id_rol INT NOT NULL,
-    id_actividad INT NOT NULL,
-    PRIMARY KEY (id_rol, id_actividad),
-    FOREIGN KEY (id_rol) REFERENCES ROL(id_rol) ON DELETE CASCADE,
-    FOREIGN KEY (id_actividad) REFERENCES ACTIVIDAD(id_actividad) ON DELETE CASCADE
-);
-
--- Tabla TAREA
-CREATE TABLE TAREA (
-    id_tarea INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(255) NOT NULL,
-    descripcion TEXT,
-    fecha_asignacion DATETIME,
-    fecha_entrega DATETIME,
-    id_curso INT NOT NULL,
-    FOREIGN KEY (id_curso) REFERENCES CURSO(id_curso) ON DELETE CASCADE
-);
-
--- Tabla NOTA_TAREA
-CREATE TABLE NOTA_TAREA (
-    id_nota INT AUTO_INCREMENT PRIMARY KEY,
-    id_tarea INT NOT NULL,
-    id_estudiante INT NOT NULL,
-    nota DECIMAL(5,2) DEFAULT NULL,
-    fecha_evaluacion DATETIME,
-    comentario TEXT,
-    UNIQUE KEY uk_tarea_estudiante (id_tarea, id_estudiante),
-    FOREIGN KEY (id_tarea) REFERENCES TAREA(id_tarea) ON DELETE CASCADE,
-    FOREIGN KEY (id_estudiante) REFERENCES ESTUDIANTE(id_estudiante) ON DELETE CASCADE
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-INSERT INTO ROL (nombre) VALUES ('Estudiante'), ('Profesor'), ('Administrador');
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Base de datos: `sistema_academico`
+--
 
--- Insertar usuarios para cada rol
+-- --------------------------------------------------------
 
-INSERT INTO USUARIO (nombre, correo, contraseña, id_rol, fecha_creacion, ultima_conexion) 
-VALUES 
-    ('Admin User', 'admin@example.com', '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918', (SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), NOW(), NOW()),
-    ('Profesor User', 'profesor@example.com', '2BB80D537B1DA3E38BD30361AA855686BDE0EACD7162FEF6A25FE97BF527A25B', (SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), NOW(), NOW()),
-    ('Estudiante User', 'estudiante@example.com', '3B64EC643AC5E82AF6C5A72BC5FFB1E7E06E0311ED0BE625DB12A5EAF8C39CA9', (SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), NOW(), NOW());
+--
+-- Estructura de tabla para la tabla `actividad`
+--
 
--- Insertar profesor
-INSERT INTO PROFESOR (idUsuario, fecha_nacimiento, direccion, telefono, grado_academico, especializacion, fecha_contratacion, estado)
-VALUES (
-    (SELECT id_usu FROM USUARIO WHERE correo = 'profesor@example.com'),
-    '1980-05-15', 'Calle Falsa 123', '555-1234', 'Maestría', 'Ingeniería de Sistemas', '2020-08-01 09:00:00', 'Activo'
-);
+DROP TABLE IF EXISTS `actividad`;
+CREATE TABLE IF NOT EXISTS `actividad` (
+  `id_actividad` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `enlace` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_actividad`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Insertar estudiante
-INSERT INTO ESTUDIANTE (idUsuario, fecha_nacimiento, direccion, telefono, numero_identificacion, estado, promedio_academico)
-VALUES (
-    (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com'),
-    '2000-03-20', 'Avenida Siempre Viva 456', '555-5678', 'ID123456', 'Activo', 85.5
-);
+--
+-- Volcado de datos para la tabla `actividad`
+--
 
--- Insertar administrador
-INSERT INTO ADMINISTRADOR (idUsuario, departamento, fecha_ingreso)
-VALUES (
-    (SELECT id_usu FROM USUARIO WHERE correo = 'admin@example.com'),
-    'Sistemas', '2019-01-10 08:00:00'
-);
+INSERT INTO `actividad` (`id_actividad`, `nombre`, `enlace`) VALUES
+(1, 'Gestionar Profesores', 'dashboard/admin/profesores.jsp'),
+(2, 'Gestionar Estudiantes', 'dashboard/admin/estudiantes.jsp'),
+(3, 'Gestionar Cursos', 'dashboard/admin/cursos.jsp'),
+(4, 'Ver Mis Cursos', 'dashboard/profesor/mis-cursos.jsp'),
+(5, 'Crear Tarea', 'dashboard/profesor/nueva-tarea.jsp'),
+(6, 'Calificar Tareas', 'dashboard/profesor/calificar-tareas.jsp'),
+(7, 'Ver Cursos Estudiante', 'dashboard/estudiante/mis-cursos.jsp'),
+(8, 'Ver Tareas Estudiante', 'dashboard/estudiante/mis-tareas.jsp'),
+(9, 'Ver Notas Estudiante', 'dashboard/estudiante/mis-notas.jsp');
 
--- Insertar cursos
-INSERT INTO CURSO (nombre, codigo, descripcion, idProfesor)
-VALUES 
-    ('Introducción a la Programación', 'CS101', 'Curso introductorio de programación.',
-    (SELECT id_profesor FROM PROFESOR WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'profesor@example.com'))),
-    ('Bases de Datos', 'CS102', 'Curso sobre diseño y gestión de bases de datos.',
-    (SELECT id_profesor FROM PROFESOR WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'profesor@example.com')));
+-- --------------------------------------------------------
 
--- Vincular cursos con estudiante
-INSERT INTO CURSO_ESTUDIANTE (id_curso, id_estudiante)
-VALUES 
-    ((SELECT id_curso FROM CURSO WHERE codigo = 'CS101'), 
-     (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com'))),
-    ((SELECT id_curso FROM CURSO WHERE codigo = 'CS102'), 
-     (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com')));
+--
+-- Estructura de tabla para la tabla `administrador`
+--
 
--- Insertar actividades del sistema
-INSERT INTO ACTIVIDAD (nombre, enlace)
-VALUES 
-    ('Gestionar Profesores', 'dashboard/admin/profesores.jsp'),
-    ('Gestionar Estudiantes', 'dashboard/admin/estudiantes.jsp'),
-    ('Gestionar Cursos', 'dashboard/admin/cursos.jsp'),
-    ('Ver Mis Cursos', 'dashboard/profesor/mis-cursos.jsp'),
-    ('Crear Tarea', 'dashboard/profesor/nueva-tarea.jsp'),
-    ('Calificar Tareas', 'dashboard/profesor/calificar-tareas.jsp'),
-    ('Ver Cursos Estudiante', 'dashboard/estudiante/mis-cursos.jsp'),
-    ('Ver Tareas Estudiante', 'dashboard/estudiante/mis-tareas.jsp'),
-    ('Ver Notas Estudiante', 'dashboard/estudiante/mis-notas.jsp');
+DROP TABLE IF EXISTS `administrador`;
+CREATE TABLE IF NOT EXISTS `administrador` (
+  `id_admin` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `departamento` varchar(255) DEFAULT NULL,
+  `fecha_ingreso` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_admin`),
+  KEY `idUsuario` (`idUsuario`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Asignar permisos de actividades a roles
-INSERT INTO GESTION_ACTIVIDADES (id_rol, id_actividad)
-VALUES 
-    -- Permisos de Administrador
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Gestionar Profesores')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Gestionar Estudiantes')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Gestionar Cursos')),
-    -- Permisos de Profesor
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Ver Mis Cursos')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Crear Tarea')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Calificar Tareas')),
-    -- Permisos de Estudiante
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Ver Cursos Estudiante')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Ver Tareas Estudiante')),
-    ((SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), (SELECT id_actividad FROM ACTIVIDAD WHERE nombre = 'Ver Notas Estudiante'));
+--
+-- Volcado de datos para la tabla `administrador`
+--
 
+INSERT INTO `administrador` (`id_admin`, `idUsuario`, `departamento`, `fecha_ingreso`) VALUES
+(1, 1, 'Sistemas', '2019-01-10 08:00:00');
 
--- Insertar tareas
-INSERT INTO TAREA (titulo, descripcion, fecha_asignacion, fecha_entrega, id_curso)
-VALUES 
-    ('Tarea 1', 'Resolver ejercicios de lógica.', '2023-04-01 08:00:00', '2023-04-15 23:59:59', 
-     (SELECT id_curso FROM CURSO WHERE codigo = 'CS101')),
-    ('Tarea 2', 'Diseñar una base de datos simple.', '2023-04-05 08:00:00', '2023-04-20 23:59:59', 
-     (SELECT id_curso FROM CURSO WHERE codigo = 'CS102'));
+-- --------------------------------------------------------
 
--- Insertar notas de tareas
-INSERT INTO NOTA_TAREA (id_tarea, id_estudiante, nota, fecha_evaluacion, comentario)
-VALUES 
-    ((SELECT id_tarea FROM TAREA WHERE titulo = 'Tarea 1'), 
-     (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com')),
-     92.5, '2023-04-16 14:30:00', 'Buen desempeño'),
-    ((SELECT id_tarea FROM TAREA WHERE titulo = 'Tarea 2'), 
-     (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com')),
-     88.0, '2023-04-21 15:45:00', 'Buen trabajo, pero hay aspectos a mejorar');
+--
+-- Estructura de tabla para la tabla `curso`
+--
+
+DROP TABLE IF EXISTS `curso`;
+CREATE TABLE IF NOT EXISTS `curso` (
+  `id_curso` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `codigo` varchar(100) NOT NULL,
+  `descripcion` text,
+  `idProfesor` int DEFAULT NULL,
+  PRIMARY KEY (`id_curso`),
+  UNIQUE KEY `codigo` (`codigo`),
+  KEY `idProfesor` (`idProfesor`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `curso`
+--
+
+INSERT INTO `curso` (`id_curso`, `nombre`, `codigo`, `descripcion`, `idProfesor`) VALUES
+(1, 'Introducción a la Programación', 'CS101', 'Curso introductorio de programación.', 1),
+(2, 'Bases de Datos', 'CS102', 'Curso sobre diseño y gestión de bases de datos.', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `curso_estudiante`
+--
+
+DROP TABLE IF EXISTS `curso_estudiante`;
+CREATE TABLE IF NOT EXISTS `curso_estudiante` (
+  `id_curso` int NOT NULL,
+  `id_estudiante` int NOT NULL,
+  PRIMARY KEY (`id_curso`,`id_estudiante`),
+  KEY `id_estudiante` (`id_estudiante`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `curso_estudiante`
+--
+
+INSERT INTO `curso_estudiante` (`id_curso`, `id_estudiante`) VALUES
+(1, 1),
+(2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estudiante`
+--
+
+DROP TABLE IF EXISTS `estudiante`;
+CREATE TABLE IF NOT EXISTS `estudiante` (
+  `id_estudiante` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `numero_identificacion` varchar(50) DEFAULT NULL,
+  `estado` enum('Activo','Inactivo') NOT NULL,
+  `promedio_academico` decimal(5,2) DEFAULT NULL,
+  PRIMARY KEY (`id_estudiante`),
+  UNIQUE KEY `numero_identificacion` (`numero_identificacion`),
+  KEY `idUsuario` (`idUsuario`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `estudiante`
+--
+
+INSERT INTO `estudiante` (`id_estudiante`, `idUsuario`, `fecha_nacimiento`, `direccion`, `telefono`, `numero_identificacion`, `estado`, `promedio_academico`) VALUES
+(1, 3, '2000-03-20', 'Avenida Siempre Viva 456', '555-5678', 'ID123456', 'Activo', 85.50);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `gestion_actividades`
+--
+
+DROP TABLE IF EXISTS `gestion_actividades`;
+CREATE TABLE IF NOT EXISTS `gestion_actividades` (
+  `id_rol` int NOT NULL,
+  `id_actividad` int NOT NULL,
+  PRIMARY KEY (`id_rol`,`id_actividad`),
+  KEY `id_actividad` (`id_actividad`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `gestion_actividades`
+--
+
+INSERT INTO `gestion_actividades` (`id_rol`, `id_actividad`) VALUES
+(1, 7),
+(1, 8),
+(1, 9),
+(2, 4),
+(2, 5),
+(2, 6),
+(3, 1),
+(3, 2),
+(3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `nota_tarea`
+--
+
+DROP TABLE IF EXISTS `nota_tarea`;
+CREATE TABLE IF NOT EXISTS `nota_tarea` (
+  `id_nota` int NOT NULL AUTO_INCREMENT,
+  `id_tarea` int NOT NULL,
+  `id_estudiante` int NOT NULL,
+  `nota` decimal(5,2) DEFAULT NULL,
+  `fecha_evaluacion` datetime DEFAULT NULL,
+  `comentario` text,
+  PRIMARY KEY (`id_nota`),
+  UNIQUE KEY `uk_tarea_estudiante` (`id_tarea`,`id_estudiante`),
+  KEY `id_estudiante` (`id_estudiante`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `nota_tarea`
+--
+
+INSERT INTO `nota_tarea` (`id_nota`, `id_tarea`, `id_estudiante`, `nota`, `fecha_evaluacion`, `comentario`) VALUES
+(1, 1, 1, 92.50, '2023-04-16 14:30:00', 'Buen desempeño'),
+(2, 2, 1, 88.00, '2023-04-21 15:45:00', 'Buen trabajo, pero hay aspectos a mejorar');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `profesor`
+--
+
+DROP TABLE IF EXISTS `profesor`;
+CREATE TABLE IF NOT EXISTS `profesor` (
+  `id_profesor` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `grado_academico` varchar(255) DEFAULT NULL,
+  `especializacion` varchar(255) DEFAULT NULL,
+  `fecha_contratacion` datetime DEFAULT NULL,
+  `estado` enum('Activo','Baja') NOT NULL,
+  PRIMARY KEY (`id_profesor`),
+  KEY `idUsuario` (`idUsuario`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `profesor`
+--
+
+INSERT INTO `profesor` (`id_profesor`, `idUsuario`, `fecha_nacimiento`, `direccion`, `telefono`, `grado_academico`, `especializacion`, `fecha_contratacion`, `estado`) VALUES
+(1, 2, '1980-05-15', 'Calle Falsa 123', '555-1234', 'Maestría', 'Ingeniería de Sistemas', '2020-08-01 09:00:00', 'Activo');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rol`
+--
+
+DROP TABLE IF EXISTS `rol`;
+CREATE TABLE IF NOT EXISTS `rol` (
+  `id_rol` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_rol`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `rol`
+--
+
+INSERT INTO `rol` (`id_rol`, `nombre`) VALUES
+(1, 'Estudiante'),
+(2, 'Profesor'),
+(3, 'Administrador');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tarea`
+--
+
+DROP TABLE IF EXISTS `tarea`;
+CREATE TABLE IF NOT EXISTS `tarea` (
+  `id_tarea` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(255) NOT NULL,
+  `descripcion` text,
+  `fecha_asignacion` datetime DEFAULT NULL,
+  `fecha_entrega` datetime DEFAULT NULL,
+  `id_curso` int NOT NULL,
+  PRIMARY KEY (`id_tarea`),
+  KEY `id_curso` (`id_curso`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `tarea`
+--
+
+INSERT INTO `tarea` (`id_tarea`, `titulo`, `descripcion`, `fecha_asignacion`, `fecha_entrega`, `id_curso`) VALUES
+(1, 'Tarea 1', 'Resolver ejercicios de lógica.', '2023-04-01 08:00:00', '2023-04-15 23:59:59', 1),
+(2, 'Tarea 2', 'Diseñar una base de datos simple.', '2023-04-05 08:00:00', '2023-04-20 23:59:59', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+CREATE TABLE IF NOT EXISTS `usuario` (
+  `id_usu` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `correo` varchar(191) NOT NULL,
+  `contraseña` varchar(64) NOT NULL,
+  `id_rol` int NOT NULL,
+  `fecha_creacion` datetime NOT NULL,
+  `ultima_conexion` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_usu`),
+  UNIQUE KEY `correo` (`correo`),
+  KEY `id_rol` (`id_rol`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id_usu`, `nombre`, `correo`, `contraseña`, `id_rol`, `fecha_creacion`, `ultima_conexion`) VALUES
+(1, 'Admin User', 'admin@example.com', '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', 3, '2025-04-16 20:58:40', '2025-04-16 00:00:00'),
+(2, 'Profesor User', 'profesor@example.com', 'CFFA965D9FAA1D453F2D336294B029A7F84F485F75CE2A2C723065453B12B03B', 2, '2025-04-16 20:58:40', '2025-04-16 20:58:40'),
+(3, 'Estudiante User', 'estudiante@example.com', '2E63A1090735F47213FEA3B974418E3E42437325F313B3D3D2F6238CC22298F9', 1, '2025-04-16 20:58:40', '2025-04-16 20:58:40');
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
