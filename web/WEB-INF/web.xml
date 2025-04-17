@@ -15,4 +15,129 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
+    
+    <!-- Servlets Mapping -->
+    <servlet>
+        <servlet-name>AdminControllerServlet</servlet-name>
+        <servlet-class>Controllers.AdminControllerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminControllerServlet</servlet-name>
+        <url-pattern>/admin/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ProfesorControllerServlet</servlet-name>
+        <servlet-class>Controllers.ProfesorControllerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfesorControllerServlet</servlet-name>
+        <url-pattern>/profesor/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>EstudianteControllerServlet</servlet-name>
+        <servlet-class>Controllers.EstudianteControllerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EstudianteControllerServlet</servlet-name>
+        <url-pattern>/estudiante/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Nuevos controladores para las tablas DataTables -->
+    <servlet>
+        <servlet-name>ActividadesController</servlet-name>
+        <servlet-class>Controllers.ActividadesController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActividadesController</servlet-name>
+        <url-pattern>/ActividadesController</url-pattern>
+        <url-pattern>/ActividadesController/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ProfesoresController</servlet-name>
+        <servlet-class>Controllers.ProfesoresController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfesoresController</servlet-name>
+        <url-pattern>/ProfesoresController</url-pattern>
+        <url-pattern>/ProfesoresController/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>EstudiantesController</servlet-name>
+        <servlet-class>Controllers.EstudiantesController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EstudiantesController</servlet-name>
+        <url-pattern>/EstudiantesController</url-pattern>
+        <url-pattern>/EstudiantesController/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CursosController</servlet-name>
+        <servlet-class>Controllers.CursosController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CursosController</servlet-name>
+        <url-pattern>/CursosController</url-pattern>
+        <url-pattern>/CursosController/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Security Constraints - Comentados para usar autenticación programática en lugar de declarativa -->
+    <!-- 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Admin Area</web-resource-name>
+            <url-pattern>/dashboard/admin/*</url-pattern>
+            <url-pattern>/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Profesor Area</web-resource-name>
+            <url-pattern>/dashboard/profesor/*</url-pattern>
+            <url-pattern>/profesor/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>profesor</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Estudiante Area</web-resource-name>
+            <url-pattern>/dashboard/estudiante/*</url-pattern>
+            <url-pattern>/estudiante/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>estudiante</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-error-page>/login.jsp?error=1</form-error-page>
+        </form-login-config>
+    </login-config>
+    -->
+    
+    <!-- Filtro de seguridad programático que será manejado por LoginServlet -->
+    
+    <security-role>
+        <role-name>admin</role-name>
+    </security-role>
+    <security-role>
+        <role-name>profesor</role-name>
+    </security-role>
+    <security-role>
+        <role-name>estudiante</role-name>
+    </security-role>
 </web-app>
