@@ -41,11 +41,11 @@ public class EstudiantesController extends HttpServlet {
                     JSONObject jsonEstudiante = new JSONObject();
                     jsonEstudiante.put("id_estudiante", estudiante.getId());
                     jsonEstudiante.put("nombre", estudiante.getNombre());
-                    jsonEstudiante.put("apellido", estudiante.getApellido());
-                    jsonEstudiante.put("email", estudiante.getEmail());
+                    jsonEstudiante.put("correo", estudiante.getCorreo());
+                    jsonEstudiante.put("numero_identificacion", estudiante.getNumeroIdentificacion());
+                    jsonEstudiante.put("estado", estudiante.getEstado());
+                    jsonEstudiante.put("promedio_academico", estudiante.getPromedioAcademico());
                     jsonEstudiante.put("telefono", estudiante.getTelefono());
-                    jsonEstudiante.put("grado", estudiante.getGrado());
-                    
                     out.print(jsonEstudiante.toString());
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -60,11 +60,11 @@ public class EstudiantesController extends HttpServlet {
                     JSONObject jsonEstudiante = new JSONObject();
                     jsonEstudiante.put("id_estudiante", estudiante.getId());
                     jsonEstudiante.put("nombre", estudiante.getNombre());
-                    jsonEstudiante.put("apellido", estudiante.getApellido());
-                    jsonEstudiante.put("email", estudiante.getEmail());
+                    jsonEstudiante.put("correo", estudiante.getCorreo());
+                    jsonEstudiante.put("numero_identificacion", estudiante.getNumeroIdentificacion());
+                    jsonEstudiante.put("estado", estudiante.getEstado());
+                    jsonEstudiante.put("promedio_academico", estudiante.getPromedioAcademico());
                     jsonEstudiante.put("telefono", estudiante.getTelefono());
-                    jsonEstudiante.put("grado", estudiante.getGrado());
-                    
                     jsonArray.put(jsonEstudiante);
                 }
                 
@@ -98,10 +98,10 @@ public class EstudiantesController extends HttpServlet {
             // Crear objeto Estudiante
             Estudiante estudiante = new Estudiante();
             estudiante.setNombre(jsonRequest.getString("nombre"));
-            estudiante.setApellido(jsonRequest.getString("apellido"));
-            estudiante.setEmail(jsonRequest.getString("email"));
+            // estudiante.setApellido(jsonRequest.getString("apellido")); // Campo no existe en el modelo
+            estudiante.setCorreo(jsonRequest.getString("email")); // Corregido: setEmail() -> setCorreo()
             estudiante.setTelefono(jsonRequest.getString("telefono"));
-            estudiante.setGrado(jsonRequest.getString("grado"));
+            // estudiante.setGrado(jsonRequest.getString("grado")); // Campo no existe en el modelo
             
             // Guardar el estudiante
             boolean exito = crearEstudiante(estudiante);
@@ -142,10 +142,10 @@ public class EstudiantesController extends HttpServlet {
             Estudiante estudiante = new Estudiante();
             estudiante.setId(jsonRequest.getInt("id_estudiante"));
             estudiante.setNombre(jsonRequest.getString("nombre"));
-            estudiante.setApellido(jsonRequest.getString("apellido"));
-            estudiante.setEmail(jsonRequest.getString("email"));
+            // estudiante.setApellido(jsonRequest.getString("apellido")); // Campo no existe en el modelo
+            estudiante.setCorreo(jsonRequest.getString("email")); // Corregido: setEmail() -> setCorreo()
             estudiante.setTelefono(jsonRequest.getString("telefono"));
-            estudiante.setGrado(jsonRequest.getString("grado"));
+            // estudiante.setGrado(jsonRequest.getString("grado")); // Campo no existe en el modelo
             
             // Actualizar el estudiante
             boolean exito = actualizarEstudiante(estudiante);

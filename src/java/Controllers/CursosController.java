@@ -46,9 +46,11 @@ public class CursosController extends HttpServlet {
                         JSONObject jsonCurso = new JSONObject();
                         jsonCurso.put("id_curso", curso.getId());
                         jsonCurso.put("nombre", curso.getNombre());
+                        jsonCurso.put("codigo", curso.getCodigo());
                         jsonCurso.put("descripcion", curso.getDescripcion());
                         jsonCurso.put("id_profesor", curso.getIdProfesor());
                         jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
+                        jsonCurso.put("profesor_nombre", curso.getNombreProfesor());
                         
                         out.print(jsonCurso.toString());
                     } else {
@@ -64,9 +66,10 @@ public class CursosController extends HttpServlet {
                         JSONObject jsonCurso = new JSONObject();
                         jsonCurso.put("id_curso", curso.getId());
                         jsonCurso.put("nombre", curso.getNombre());
+                        jsonCurso.put("codigo", curso.getCodigo());
                         jsonCurso.put("descripcion", curso.getDescripcion());
                         jsonCurso.put("id_profesor", curso.getIdProfesor());
-                        jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
+                        jsonCurso.put("profesor_nombre", curso.getNombreProfesor()); // Clave corregida
                         
                         jsonArray.put(jsonCurso);
                     }
@@ -85,6 +88,7 @@ public class CursosController extends HttpServlet {
                     JSONObject jsonCurso = new JSONObject();
                     jsonCurso.put("id_curso", curso.getId());
                     jsonCurso.put("nombre", curso.getNombre());
+                    jsonCurso.put("codigo", curso.getCodigo());
                     jsonCurso.put("descripcion", curso.getDescripcion());
                     jsonCurso.put("id_profesor", curso.getIdProfesor());
                     jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
@@ -105,6 +109,7 @@ public class CursosController extends HttpServlet {
                     JSONObject jsonCurso = new JSONObject();
                     jsonCurso.put("id_curso", curso.getId());
                     jsonCurso.put("nombre", curso.getNombre());
+                    jsonCurso.put("codigo", curso.getCodigo());
                     jsonCurso.put("descripcion", curso.getDescripcion());
                     jsonCurso.put("id_profesor", curso.getIdProfesor());
                     jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
@@ -126,11 +131,8 @@ public class CursosController extends HttpServlet {
                         JSONObject jsonEstudiante = new JSONObject();
                         jsonEstudiante.put("id_estudiante", estudiante.getId());
                         jsonEstudiante.put("nombre", estudiante.getNombre());
-                        jsonEstudiante.put("apellido", estudiante.getApellido());
-                        jsonEstudiante.put("email", estudiante.getEmail());
                         jsonEstudiante.put("telefono", estudiante.getTelefono());
-                        jsonEstudiante.put("grado", estudiante.getGrado());
-                        
+                        jsonEstudiante.put("correo", estudiante.getCorreo());
                         jsonArray.put(jsonEstudiante);
                     }
                     

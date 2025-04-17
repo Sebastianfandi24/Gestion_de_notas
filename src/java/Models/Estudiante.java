@@ -36,6 +36,14 @@ public class Estudiante extends Usuario {
         this.idEstudiante = idEstudiante;
     }
 
+    public int getIdUsuario() {
+        return super.getId();
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        super.setId(idUsuario);
+    }
+
     public Date getFechaNacimiento() {
         return fechaNacimiento;
     }
@@ -82,5 +90,45 @@ public class Estudiante extends Usuario {
 
     public void setPromedioAcademico(float promedioAcademico) {
         this.promedioAcademico = promedioAcademico;
+    }
+
+    public String getNombre() {
+        return super.getNombre();
+    }
+
+    public void setNombre(String nombre) {
+        super.setNombre(nombre);
+    }
+
+    public String getCorreo() {
+        return super.getCorreo();
+    }
+
+    public void setCorreo(String correo) {
+        super.setCorreo(correo);
+    }
+
+    public String getContraseña() {
+        return super.getContraseña();
+    }
+
+    public void setContraseña(String contraseña) {
+        super.setContraseña(contraseña);
+    }
+
+    public Date getFechaCreacion() {
+        return super.getFechaCreacion();
+    }
+
+    public void setFechaCreacion(Date fechaCreacion) {
+        super.setFechaCreacion(fechaCreacion);
+    }
+
+    public Date getUltimaConexion() {
+        return super.getUltimaConexion();
+    }
+
+    public void setUltimaConexion(Date ultimaConexion) {
+        super.setUltimaConexion(ultimaConexion);
     }
 }

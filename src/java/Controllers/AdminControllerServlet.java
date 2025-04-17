@@ -131,10 +131,10 @@ public class AdminControllerServlet extends HttpServlet {
                     Profesor profesor = new Profesor();
                     profesor.setNombre(request.getParameter("nombre"));
                     profesor.setCorreo(request.getParameter("correo"));
-                    profesor.setId_rol(2); // Rol de profesor
+                    profesor.setIdRol(2); // Rol de profesor
                     profesor.setDireccion(request.getParameter("direccion"));
                     profesor.setTelefono(request.getParameter("telefono"));
-                    profesor.setGrado_academico(request.getParameter("grado_academico"));
+                    profesor.setGradoAcademico(request.getParameter("grado_academico"));
                     profesor.setEspecializacion(request.getParameter("especializacion"));
                     profesor.setEstado(request.getParameter("estado"));
                     
@@ -143,10 +143,10 @@ public class AdminControllerServlet extends HttpServlet {
                         String fechaContratacionStr = request.getParameter("fecha_contratacion");
                         
                         if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
-                            profesor.setFecha_nacimiento(dateFormat.parse(fechaNacStr));
+                            profesor.setFechaNacimiento(dateFormat.parse(fechaNacStr));
                         }
                         if (fechaContratacionStr != null && !fechaContratacionStr.isEmpty()) {
-                            profesor.setFecha_contratacion(dateFormat.parse(fechaContratacionStr));
+                            profesor.setFechaContratacion(dateFormat.parse(fechaContratacionStr));
                         }
                         
                         boolean success = profesorDAO.create(profesor);
@@ -166,10 +166,10 @@ public class AdminControllerServlet extends HttpServlet {
                     Estudiante estudiante = new Estudiante();
                     estudiante.setNombre(request.getParameter("nombre"));
                     estudiante.setCorreo(request.getParameter("correo"));
-                    estudiante.setId_rol(1); // Rol de estudiante
+                    estudiante.setIdRol(1); // Rol de estudiante
                     estudiante.setDireccion(request.getParameter("direccion"));
                     estudiante.setTelefono(request.getParameter("telefono"));
-                    estudiante.setNumero_identificacion(request.getParameter("numero_identificacion"));
+                    estudiante.setNumeroIdentificacion(request.getParameter("numero_identificacion"));
                     estudiante.setEstado(request.getParameter("estado"));
                     
                     try {
@@ -177,10 +177,10 @@ public class AdminControllerServlet extends HttpServlet {
                         String promedioStr = request.getParameter("promedio_academico");
                         
                         if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
-                            estudiante.setFecha_nacimiento(dateFormat.parse(fechaNacStr));
+                            estudiante.setFechaNacimiento(dateFormat.parse(fechaNacStr));
                         }
                         if (promedioStr != null && !promedioStr.isEmpty()) {
-                            estudiante.setPromedio_academico(Float.parseFloat(promedioStr));
+                            estudiante.setPromedioAcademico(Float.parseFloat(promedioStr));
                         }
                         
                         boolean success = estudianteDAO.create(estudiante);
@@ -307,7 +307,7 @@ public class AdminControllerServlet extends HttpServlet {
                         estudiante.setCorreo(request.getParameter("correo"));
                         estudiante.setDireccion(request.getParameter("direccion"));
                         estudiante.setTelefono(request.getParameter("telefono"));
-                        estudiante.setNumero_identificacion(request.getParameter("numero_identificacion"));
+                        estudiante.setNumeroIdentificacion(request.getParameter("numero_identificacion"));
                         estudiante.setEstado(request.getParameter("estado"));
                         
                         try {
@@ -315,10 +315,10 @@ public class AdminControllerServlet extends HttpServlet {
                             String promedioStr = request.getParameter("promedio_academico");
                             
                             if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
-                                estudiante.setFecha_nacimiento(dateFormat.parse(fechaNacStr));
+                                estudiante.setFechaNacimiento(dateFormat.parse(fechaNacStr));
                             }
                             if (promedioStr != null && !promedioStr.isEmpty()) {
-                                estudiante.setPromedio_academico(Float.parseFloat(promedioStr));
+                                estudiante.setPromedioAcademico(Float.parseFloat(promedioStr));
                             }
                             
                             boolean success = estudianteDAO.update(estudiante);

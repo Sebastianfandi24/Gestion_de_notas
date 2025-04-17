@@ -37,21 +37,20 @@ public class LoginServlet extends HttpServlet {
 
         try {
             Usuario usuario = usuarioDAO.autenticarUsuario(correo, contraseña);
-            
-            if (usuario != null) {
-                System.out.println("[LoginServlet] Autenticación exitosa - Usuario: " + usuario.getNombre() + ", Rol: " + usuario.getId_rol());
+                        if (usuario != null) {
+                System.out.println("[LoginServlet] Autenticación exitosa - Usuario: " + usuario.getNombre() + ", Rol: " + usuario.getIdRol());
                 // Actualizar última conexión
-                usuario.setUltima_conexion(new Date(System.currentTimeMillis()));
+                usuario.setUltimaConexion(new Date(System.currentTimeMillis()));
                 usuarioDAO.actualizarUltimaConexion(usuario);
                 
                 // Iniciar sesión
                 HttpSession session = request.getSession();
-                session.setAttribute("userId", usuario.getId_usu());
+                session.setAttribute("userId", usuario.getId());
                 session.setAttribute("userNombre", usuario.getNombre());
-                session.setAttribute("userRol", usuario.getId_rol());
+                session.setAttribute("userRol", usuario.getIdRol());
                 
                 // Redirigir según rol
-                switch (usuario.getId_rol()) {
+                switch (usuario.getIdRol()) {
                     case 3: // Administrador
                         System.out.println("[LoginServlet] Redirigiendo a dashboard de administrador");
                         response.sendRedirect(request.getContextPath() + "/dashboard/admin/index.jsp");
@@ -66,7 +65,7 @@ public class LoginServlet extends HttpServlet {
                         break;
                     default:
                         mensaje = "Rol no válido";
-                        System.out.println("[LoginServlet] Error - Rol no válido: " + usuario.getId_rol());
+                        System.out.println("[LoginServlet] Error - Rol no válido: " + usuario.getIdRol());
                         request.setAttribute("error", mensaje);
                         request.getRequestDispatcher("/login.jsp").forward(request, response);
                 }

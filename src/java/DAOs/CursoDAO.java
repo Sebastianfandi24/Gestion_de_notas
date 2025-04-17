@@ -324,7 +324,7 @@ public class CursoDAO implements CRUD<Curso> {
     }
     
     public List<Estudiante> getEstudiantesPorCurso(int idCurso) {
-        String sql = "SELECT e.*, u.nombre, u.apellido FROM ESTUDIANTE e "
+        String sql = "SELECT e.*, u.nombre, u.correo FROM ESTUDIANTE e "
                 + "INNER JOIN CURSO_ESTUDIANTE ce ON e.id_estudiante = ce.id_estudiante "
                 + "INNER JOIN USUARIO u ON e.idUsuario = u.id_usu "
                 + "WHERE ce.id_curso = ?";
@@ -338,12 +338,12 @@ public class CursoDAO implements CRUD<Curso> {
             
             while (rs.next()) {
                 Estudiante estudiante = new Estudiante();
-                estudiante.setId_estudiante(rs.getInt("id_estudiante"));
+                estudiante.setId(rs.getInt("id_estudiante"));
                 estudiante.setNombre(rs.getString("nombre"));
-                estudiante.setApellido(rs.getString("apellido"));
-                estudiante.setEmail(rs.getString("email"));
+                estudiante.setCorreo(rs.getString("correo"));
                 estudiante.setTelefono(rs.getString("telefono"));
-                estudiante.setGrado(rs.getString("grado"));
+                estudiante.setNumeroIdentificacion(rs.getString("numero_identificacion"));
+                estudiante.setEstado(rs.getString("estado"));
                 estudiantes.add(estudiante);
             }
             

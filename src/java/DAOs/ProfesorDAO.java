@@ -32,7 +32,7 @@ public class ProfesorDAO implements CRUD<Profesor> {
             ps = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, profesor.getNombre());
             ps.setString(2, profesor.getCorreo());
-            ps.setInt(3, profesor.getId_rol());
+            ps.setInt(3, profesor.getIdRol());
             System.out.println("[ProfesorDAO] Insertando en tabla USUARIO...");
             ps.executeUpdate();
             
@@ -44,12 +44,11 @@ public class ProfesorDAO implements CRUD<Profesor> {
                 // Insertar en la tabla PROFESOR
                 ps = conn.prepareStatement(sqlProfesor);
                 ps.setInt(1, idUsuario);
-                ps.setDate(2, profesor.getFecha_nacimiento() != null ? new java.sql.Date(profesor.getFecha_nacimiento().getTime()) : null);
                 ps.setString(3, profesor.getDireccion());
                 ps.setString(4, profesor.getTelefono());
-                ps.setString(5, profesor.getGrado_academico());
+                ps.setString(5, profesor.getGradoAcademico());
                 ps.setString(6, profesor.getEspecializacion());
-                ps.setDate(7, profesor.getFecha_contratacion() != null ? new java.sql.Date(profesor.getFecha_contratacion().getTime()) : null);
+                ps.setDate(7, profesor.getFechaContratacion() != null ? new java.sql.Date(profesor.getFechaContratacion().getTime()) : null);
                 ps.setString(8, profesor.getEstado());
                 ps.executeUpdate();
                 
@@ -103,19 +102,19 @@ public class ProfesorDAO implements CRUD<Profesor> {
             
             if (rs.next()) {
                 profesor = new Profesor();
-                profesor.setId_profesor(rs.getInt("id_profesor"));
-                profesor.setId_usu(rs.getInt("id_usu"));
+                profesor.setId(rs.getInt("id_profesor"));
+                profesor.setIdUsu(rs.getInt("id_usu"));
                 profesor.setNombre(rs.getString("nombre"));
                 profesor.setCorreo(rs.getString("correo"));
-                profesor.setId_rol(rs.getInt("id_rol"));
-                profesor.setFecha_creacion(rs.getDate("fecha_creacion"));
-                profesor.setUltima_conexion(rs.getDate("ultima_conexion"));
-                profesor.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
+                profesor.setIdRol(rs.getInt("id_rol"));
+                profesor.setFechaCreacion(rs.getDate("fecha_creacion"));
+                profesor.setUltimaConexion(rs.getDate("ultima_conexion"));
+                profesor.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
                 profesor.setDireccion(rs.getString("direccion"));
                 profesor.setTelefono(rs.getString("telefono"));
-                profesor.setGrado_academico(rs.getString("grado_academico"));
+                profesor.setGradoAcademico(rs.getString("grado_academico"));
                 profesor.setEspecializacion(rs.getString("especializacion"));
-                profesor.setFecha_contratacion(rs.getDate("fecha_contratacion"));
+                profesor.setFechaContratacion(rs.getDate("fecha_contratacion"));
                 profesor.setEstado(rs.getString("estado"));
             }
             
@@ -150,19 +149,19 @@ public class ProfesorDAO implements CRUD<Profesor> {
             
             while (rs.next()) {
                 Profesor profesor = new Profesor();
-                profesor.setId_profesor(rs.getInt("id_profesor"));
-                profesor.setId_usu(rs.getInt("id_usu"));
+                profesor.setId(rs.getInt("id_profesor"));
+                profesor.setIdUsu(rs.getInt("id_usu"));
                 profesor.setNombre(rs.getString("nombre"));
                 profesor.setCorreo(rs.getString("correo"));
-                profesor.setId_rol(rs.getInt("id_rol"));
-                profesor.setFecha_creacion(rs.getDate("fecha_creacion"));
-                profesor.setUltima_conexion(rs.getDate("ultima_conexion"));
-                profesor.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
+                profesor.setIdRol(rs.getInt("id_rol"));
+                profesor.setFechaCreacion(rs.getDate("fecha_creacion"));
+                profesor.setUltimaConexion(rs.getDate("ultima_conexion"));
+                profesor.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
                 profesor.setDireccion(rs.getString("direccion"));
                 profesor.setTelefono(rs.getString("telefono"));
-                profesor.setGrado_academico(rs.getString("grado_academico"));
+                profesor.setGradoAcademico(rs.getString("grado_academico"));
                 profesor.setEspecializacion(rs.getString("especializacion"));
-                profesor.setFecha_contratacion(rs.getDate("fecha_contratacion"));
+                profesor.setFechaContratacion(rs.getDate("fecha_contratacion"));
                 profesor.setEstado(rs.getString("estado"));
                 profesores.add(profesor);
             }

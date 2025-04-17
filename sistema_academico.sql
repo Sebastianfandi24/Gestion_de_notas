@@ -6,8 +6,6 @@ CREATE TABLE ROL (
     id_rol INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL
 );
-INSERT INTO ROL (nombre) VALUES ('Estudiante'), ('Profesor'), ('Administrador');
-
 
 -- Tabla USUARIO
 CREATE TABLE USUARIO (
@@ -16,8 +14,8 @@ CREATE TABLE USUARIO (
     correo VARCHAR(191) UNIQUE NOT NULL,
     contraseña VARCHAR(64) NOT NULL,
     id_rol INT NOT NULL,
-    fecha_creacion DATE NOT NULL,
-    ultima_conexion DATE,
+    fecha_creacion DATETIME NOT NULL,
+    ultima_conexion DATETIME,
     FOREIGN KEY (id_rol) REFERENCES ROL(id_rol)
 );
 
@@ -30,7 +28,7 @@ CREATE TABLE PROFESOR (
     telefono VARCHAR(20),
     grado_academico VARCHAR(255),
     especializacion VARCHAR(255),
-    fecha_contratacion DATE,
+    fecha_contratacion DATETIME,
     estado ENUM('Activo', 'Baja') NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
 );
@@ -44,7 +42,7 @@ CREATE TABLE ESTUDIANTE (
     telefono VARCHAR(20),
     numero_identificacion VARCHAR(50) UNIQUE,
     estado ENUM('Activo', 'Inactivo') NOT NULL,
-    promedio_academico FLOAT,
+    promedio_academico DECIMAL(5,2),
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
 );
 
@@ -53,7 +51,7 @@ CREATE TABLE ADMINISTRADOR (
     id_admin INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     departamento VARCHAR(255),
-    fecha_ingreso DATE,
+    fecha_ingreso DATETIME,
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id_usu) ON DELETE CASCADE
 );
 
@@ -97,8 +95,8 @@ CREATE TABLE TAREA (
     id_tarea INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     descripcion TEXT,
-    fecha_asignacion DATE,
-    fecha_entrega DATE,
+    fecha_asignacion DATETIME,
+    fecha_entrega DATETIME,
     id_curso INT NOT NULL,
     FOREIGN KEY (id_curso) REFERENCES CURSO(id_curso) ON DELETE CASCADE
 );
@@ -109,7 +107,7 @@ CREATE TABLE NOTA_TAREA (
     id_tarea INT NOT NULL,
     id_estudiante INT NOT NULL,
     nota DECIMAL(5,2) DEFAULT NULL,
-    fecha_evaluacion DATE,
+    fecha_evaluacion DATETIME,
     comentario TEXT,
     UNIQUE KEY uk_tarea_estudiante (id_tarea, id_estudiante),
     FOREIGN KEY (id_tarea) REFERENCES TAREA(id_tarea) ON DELETE CASCADE,
@@ -117,18 +115,22 @@ CREATE TABLE NOTA_TAREA (
 );
 
 
+INSERT INTO ROL (nombre) VALUES ('Estudiante'), ('Profesor'), ('Administrador');
+
+
+-- Insertar usuarios para cada rol
 
 INSERT INTO USUARIO (nombre, correo, contraseña, id_rol, fecha_creacion, ultima_conexion) 
 VALUES 
-    ('Admin User', 'admin@example.com', '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918', (SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), CURDATE(), CURDATE()),
-    ('Profesor User', 'profesor@example.com', '2BB80D537B1DA3E38BD30361AA855686BDE0EACD7162FEF6A25FE97BF527A25B', (SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), CURDATE(), CURDATE()),
-    ('Estudiante User', 'estudiante@example.com', '3B64EC643AC5E82AF6C5A72BC5FFB1E7E06E0311ED0BE625DB12A5EAF8C39CA9', (SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), CURDATE(), CURDATE());
+    ('Admin User', 'admin@example.com', '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918', (SELECT id_rol FROM ROL WHERE nombre = 'Administrador'), NOW(), NOW()),
+    ('Profesor User', 'profesor@example.com', '2BB80D537B1DA3E38BD30361AA855686BDE0EACD7162FEF6A25FE97BF527A25B', (SELECT id_rol FROM ROL WHERE nombre = 'Profesor'), NOW(), NOW()),
+    ('Estudiante User', 'estudiante@example.com', '3B64EC643AC5E82AF6C5A72BC5FFB1E7E06E0311ED0BE625DB12A5EAF8C39CA9', (SELECT id_rol FROM ROL WHERE nombre = 'Estudiante'), NOW(), NOW());
 
 -- Insertar profesor
 INSERT INTO PROFESOR (idUsuario, fecha_nacimiento, direccion, telefono, grado_academico, especializacion, fecha_contratacion, estado)
 VALUES (
     (SELECT id_usu FROM USUARIO WHERE correo = 'profesor@example.com'),
-    '1980-05-15', 'Calle Falsa 123', '555-1234', 'Maestría', 'Ingeniería de Sistemas', '2020-08-01', 'Activo'
+    '1980-05-15', 'Calle Falsa 123', '555-1234', 'Maestría', 'Ingeniería de Sistemas', '2020-08-01 09:00:00', 'Activo'
 );
 
 -- Insertar estudiante
@@ -142,7 +144,7 @@ VALUES (
 INSERT INTO ADMINISTRADOR (idUsuario, departamento, fecha_ingreso)
 VALUES (
     (SELECT id_usu FROM USUARIO WHERE correo = 'admin@example.com'),
-    'Sistemas', '2019-01-10'
+    'Sistemas', '2019-01-10 08:00:00'
 );
 
 -- Insertar cursos
@@ -194,9 +196,9 @@ VALUES
 -- Insertar tareas
 INSERT INTO TAREA (titulo, descripcion, fecha_asignacion, fecha_entrega, id_curso)
 VALUES 
-    ('Tarea 1', 'Resolver ejercicios de lógica.', '2023-04-01', '2023-04-15', 
+    ('Tarea 1', 'Resolver ejercicios de lógica.', '2023-04-01 08:00:00', '2023-04-15 23:59:59', 
      (SELECT id_curso FROM CURSO WHERE codigo = 'CS101')),
-    ('Tarea 2', 'Diseñar una base de datos simple.', '2023-04-05', '2023-04-20', 
+    ('Tarea 2', 'Diseñar una base de datos simple.', '2023-04-05 08:00:00', '2023-04-20 23:59:59', 
      (SELECT id_curso FROM CURSO WHERE codigo = 'CS102'));
 
 -- Insertar notas de tareas
@@ -204,7 +206,7 @@ INSERT INTO NOTA_TAREA (id_tarea, id_estudiante, nota, fecha_evaluacion, comenta
 VALUES 
     ((SELECT id_tarea FROM TAREA WHERE titulo = 'Tarea 1'), 
      (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com')),
-     92.5, '2023-04-16', 'Buen desempeño'),
+     92.5, '2023-04-16 14:30:00', 'Buen desempeño'),
     ((SELECT id_tarea FROM TAREA WHERE titulo = 'Tarea 2'), 
      (SELECT id_estudiante FROM ESTUDIANTE WHERE idUsuario = (SELECT id_usu FROM USUARIO WHERE correo = 'estudiante@example.com')),
-     88.0, '2023-04-21', 'Buen trabajo, pero hay aspectos a mejorar');
+     88.0, '2023-04-21 15:45:00', 'Buen trabajo, pero hay aspectos a mejorar');

@@ -1,15 +1,12 @@
 package Controllers;
 
 import Models.Profesor;
+import DAOs.ProfesorDAO; // Added missing import
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.text.ParseException; // Added import
+import java.text.SimpleDateFormat; // Added import
+import java.util.Date; // Added import
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,6 +22,14 @@ import org.json.JSONObject;
 @WebServlet("/ProfesoresController")
 public class ProfesoresController extends HttpServlet {
 
+    private final ProfesorDAO profesorDAO;
+    private final SimpleDateFormat dateFormat; // Added SimpleDateFormat instance
+
+    public ProfesoresController() {
+        this.profesorDAO = new ProfesorDAO();
+        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Initialize SimpleDateFormat
+    }
+    
     /**
      * Maneja las solicitudes GET para obtener profesores
      */
@@ -97,7 +102,7 @@ public class ProfesoresController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+
         try {
             // Leer el cuerpo de la solicitud
             StringBuilder sb = new StringBuilder();
@@ -105,24 +110,42 @@ public class ProfesoresController extends HttpServlet {
             while ((line = request.getReader().readLine()) != null) {
                 sb.append(line);
             }
-            
+
             JSONObject jsonRequest = new JSONObject(sb.toString());
-            
+
             // Crear objeto Profesor
             Profesor profesor = new Profesor();
             profesor.setNombre(jsonRequest.getString("nombre"));
             profesor.setCorreo(jsonRequest.getString("correo"));
-            profesor.setFechaNacimiento(jsonRequest.optString("fecha_nacimiento", null));
             profesor.setTelefono(jsonRequest.optString("telefono", null));
             profesor.setGradoAcademico(jsonRequest.optString("grado_academico", null));
             profesor.setEspecializacion(jsonRequest.optString("especializacion", null));
-            profesor.setFechaContratacion(jsonRequest.optString("fecha_contratacion", null));
             profesor.setEstado(jsonRequest.optString("estado", "Activo"));
             profesor.setDireccion(jsonRequest.optString("direccion", null));
-            
+            profesor.setIdRol(2); // Assuming Rol 2 is Profesor
+
+            // Parse dates
+            String fechaNacStr = jsonRequest.optString("fecha_nacimiento", null);
+            if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
+                try {
+                    profesor.setFechaNacimiento(dateFormat.parse(fechaNacStr));
+                } catch (ParseException e) {
+                    throw new ServletException("Formato de fecha de nacimiento inválido", e);
+                }
+            }
+
+            String fechaContratacionStr = jsonRequest.optString("fecha_contratacion", null);
+            if (fechaContratacionStr != null && !fechaContratacionStr.isEmpty()) {
+                try {
+                    profesor.setFechaContratacion(dateFormat.parse(fechaContratacionStr));
+                } catch (ParseException e) {
+                    throw new ServletException("Formato de fecha de contratación inválido", e);
+                }
+            }
+
             // Guardar el profesor
             boolean exito = crearProfesor(profesor);
-            
+
             if (exito) {
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 response.getWriter().print(new JSONObject().put("mensaje", "Profesor creado exitosamente").toString());
@@ -131,7 +154,7 @@ public class ProfesoresController extends HttpServlet {
                 response.getWriter().print(new JSONObject().put("error", "Error al crear el profesor").toString());
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Changed to BAD_REQUEST for parsing errors
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
@@ -144,7 +167,7 @@ public class ProfesoresController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+
         try {
             // Leer el cuerpo de la solicitud
             StringBuilder sb = new StringBuilder();
@@ -152,25 +175,43 @@ public class ProfesoresController extends HttpServlet {
             while ((line = request.getReader().readLine()) != null) {
                 sb.append(line);
             }
-            
+
             JSONObject jsonRequest = new JSONObject(sb.toString());
-            
+
             // Crear objeto Profesor
             Profesor profesor = new Profesor();
-            profesor.setId(jsonRequest.getInt("id_profesor"));
+            profesor.setId(jsonRequest.getInt("id_profesor")); // Use setId for the primary key
+            profesor.setIdUsu(jsonRequest.getInt("id_usu")); // Need id_usu for update
             profesor.setNombre(jsonRequest.getString("nombre"));
             profesor.setCorreo(jsonRequest.getString("correo"));
-            profesor.setFechaNacimiento(jsonRequest.optString("fecha_nacimiento", null));
             profesor.setTelefono(jsonRequest.optString("telefono", null));
             profesor.setGradoAcademico(jsonRequest.optString("grado_academico", null));
             profesor.setEspecializacion(jsonRequest.optString("especializacion", null));
-            profesor.setFechaContratacion(jsonRequest.optString("fecha_contratacion", null));
             profesor.setEstado(jsonRequest.optString("estado", "Activo"));
             profesor.setDireccion(jsonRequest.optString("direccion", null));
-            
+
+            // Parse dates
+            String fechaNacStr = jsonRequest.optString("fecha_nacimiento", null);
+            if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
+                try {
+                    profesor.setFechaNacimiento(dateFormat.parse(fechaNacStr));
+                } catch (ParseException e) {
+                    throw new ServletException("Formato de fecha de nacimiento inválido", e);
+                }
+            }
+
+            String fechaContratacionStr = jsonRequest.optString("fecha_contratacion", null);
+            if (fechaContratacionStr != null && !fechaContratacionStr.isEmpty()) {
+                try {
+                    profesor.setFechaContratacion(dateFormat.parse(fechaContratacionStr));
+                } catch (ParseException e) {
+                    throw new ServletException("Formato de fecha de contratación inválido", e);
+                }
+            }
+
             // Actualizar el profesor
             boolean exito = actualizarProfesor(profesor);
-            
+
             if (exito) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().print(new JSONObject().put("mensaje", "Profesor actualizado exitosamente").toString());
@@ -179,7 +220,7 @@ public class ProfesoresController extends HttpServlet {
                 response.getWriter().print(new JSONObject().put("error", "Error al actualizar el profesor").toString());
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Changed to BAD_REQUEST for parsing errors
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
@@ -219,28 +260,24 @@ public class ProfesoresController extends HttpServlet {
     
     // Métodos auxiliares para interactuar con la base de datos
     
-    private final ProfesorDAO profesorDAO;
-    
-    public ProfesoresController() {
-        this.profesorDAO = new ProfesorDAO();
-    }
-    
+    // Removed duplicate ProfesorDAO instance
+
     private Profesor obtenerProfesorPorId(int id) {
         return profesorDAO.read(id);
     }
-    
+
     private List<Profesor> obtenerTodosProfesores() {
         return profesorDAO.readAll();
     }
-    
+
     private boolean crearProfesor(Profesor profesor) {
         return profesorDAO.create(profesor);
     }
-    
+
     private boolean actualizarProfesor(Profesor profesor) {
         return profesorDAO.update(profesor);
     }
-    
+
     private boolean eliminarProfesor(int id) {
         return profesorDAO.delete(id);
     }

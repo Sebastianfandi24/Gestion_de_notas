@@ -65,4 +65,13 @@ public class Curso {
     public void setProfesor_nombre(String profesor_nombre) {
         this.profesor_nombre = profesor_nombre;
     }
+    
+    // Método adicional para compatibilidad con los controladores
+    public String getNombreProfesor() {
+        return profesor_nombre;
+    }
+
+    public void setNombreProfesor(String nombreProfesor) {
+        this.profesor_nombre = nombreProfesor;
+    }
 }

@@ -28,7 +28,7 @@ public class TareaDAO implements CRUD<Tarea> {
             ps.setString(2, tarea.getDescripcion());
             ps.setDate(3, tarea.getFecha_asignacion() != null ? new java.sql.Date(tarea.getFecha_asignacion().getTime()) : null);
             ps.setDate(4, tarea.getFecha_entrega() != null ? new java.sql.Date(tarea.getFecha_entrega().getTime()) : null);
-            ps.setInt(5, tarea.getId_curso());
+            ps.setInt(5, tarea.getIdCurso());
             
             int resultado = ps.executeUpdate();
             return resultado > 0;
@@ -61,7 +61,7 @@ public class TareaDAO implements CRUD<Tarea> {
             
             if (rs.next()) {
                 tarea = new Tarea();
-                tarea.setId_tarea(rs.getInt("id_tarea"));
+                tarea.setId(rs.getInt("id_tarea"));
                 tarea.setTitulo(rs.getString("titulo"));
                 tarea.setDescripcion(rs.getString("descripcion"));
                 tarea.setFecha_asignacion(rs.getDate("fecha_asignacion"));
@@ -98,7 +98,7 @@ public class TareaDAO implements CRUD<Tarea> {
             
             while (rs.next()) {
                 Tarea tarea = new Tarea();
-                tarea.setId_tarea(rs.getInt("id_tarea"));
+                tarea.setId(rs.getInt("id_tarea"));
                 tarea.setTitulo(rs.getString("titulo"));
                 tarea.setDescripcion(rs.getString("descripcion"));
                 tarea.setFecha_asignacion(rs.getDate("fecha_asignacion"));
@@ -134,8 +134,8 @@ public class TareaDAO implements CRUD<Tarea> {
             ps.setString(2, tarea.getDescripcion());
             ps.setDate(3, tarea.getFecha_asignacion() != null ? new java.sql.Date(tarea.getFecha_asignacion().getTime()) : null);
             ps.setDate(4, tarea.getFecha_entrega() != null ? new java.sql.Date(tarea.getFecha_entrega().getTime()) : null);
-            ps.setInt(5, tarea.getId_curso());
-            ps.setInt(6, tarea.getId_tarea());
+            ps.setInt(5, tarea.getIdCurso());
+            ps.setInt(6, tarea.getId());
             
             int resultado = ps.executeUpdate();
             return resultado > 0;
@@ -192,7 +192,7 @@ public class TareaDAO implements CRUD<Tarea> {
             
             while (rs.next()) {
                 Tarea tarea = new Tarea();
-                tarea.setId_tarea(rs.getInt("id_tarea"));
+                tarea.setId(rs.getInt("id_tarea"));
                 tarea.setTitulo(rs.getString("titulo"));
                 tarea.setDescripcion(rs.getString("descripcion"));
                 tarea.setFecha_asignacion(rs.getDate("fecha_asignacion"));

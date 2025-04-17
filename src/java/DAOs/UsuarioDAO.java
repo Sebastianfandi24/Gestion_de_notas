@@ -60,13 +60,13 @@ public class UsuarioDAO {
                     }
                     
                     Usuario usuario = new Usuario();
-                    usuario.setId_usu(rs.getInt("id_usu"));
+                    usuario.setId(rs.getInt("id_usu"));
                     usuario.setNombre(rs.getString("nombre"));
                     usuario.setCorreo(rs.getString("correo"));
                     usuario.setContraseña(rs.getString("contraseña"));
-                    usuario.setId_rol(rs.getInt("id_rol"));
-                    usuario.setFecha_creacion(rs.getDate("fecha_creacion"));
-                    usuario.setUltima_conexion(new Date(System.currentTimeMillis()));
+                    usuario.setIdRol(rs.getInt("id_rol"));
+                    usuario.setFechaCreacion(rs.getDate("fecha_creacion"));
+                    usuario.setUltimaConexion(new Date(System.currentTimeMillis()));
                     actualizarUltimaConexion(usuario);
                     return usuario;
                 }
@@ -76,12 +76,12 @@ public class UsuarioDAO {
     }
     
     public void actualizarUltimaConexion(Usuario usuario) throws SQLException {
-        System.out.println("[UsuarioDAO] Actualizando última conexión para usuario ID: " + usuario.getId_usu());
+        System.out.println("[UsuarioDAO] Actualizando última conexión para usuario ID: " + usuario.getId());
         String sql = "UPDATE USUARIO SET ultima_conexion = ? WHERE id_usu = ?";
         
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setDate(1, new Date(System.currentTimeMillis()));
-            stmt.setInt(2, usuario.getId_usu());
+            stmt.setInt(2, usuario.getId());
             int filasActualizadas = stmt.executeUpdate();
             System.out.println("[UsuarioDAO] Última conexión actualizada exitosamente. Filas afectadas: " + filasActualizadas);
         } catch (SQLException e) {

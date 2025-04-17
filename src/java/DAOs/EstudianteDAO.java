@@ -32,7 +32,7 @@ public class EstudianteDAO implements CRUD<Estudiante> {
             ps = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, estudiante.getNombre());
             ps.setString(2, estudiante.getCorreo());
-            ps.setInt(3, estudiante.getId_rol());
+            ps.setInt(3, estudiante.getIdRol());
             ps.executeUpdate();
             
             // Obtener el ID generado para el usuario
@@ -45,12 +45,12 @@ public class EstudianteDAO implements CRUD<Estudiante> {
                 ps = conn.prepareStatement(sqlEstudiante);
                 System.out.println("[EstudianteDAO] Insertando en tabla ESTUDIANTE...");
                 ps.setInt(1, idUsuario);
-                ps.setDate(2, estudiante.getFecha_nacimiento() != null ? new java.sql.Date(estudiante.getFecha_nacimiento().getTime()) : null);
+                ps.setDate(2, estudiante.getFechaNacimiento() != null ? new java.sql.Date(estudiante.getFechaNacimiento().getTime()) : null);
                 ps.setString(3, estudiante.getDireccion());
                 ps.setString(4, estudiante.getTelefono());
-                ps.setString(5, estudiante.getNumero_identificacion());
+                ps.setString(5, estudiante.getNumeroIdentificacion());
                 ps.setString(6, estudiante.getEstado());
-                ps.setFloat(7, estudiante.getPromedio_academico());
+                ps.setFloat(7, estudiante.getPromedioAcademico());
                 ps.executeUpdate();
                 
                 conn.commit();
@@ -103,19 +103,19 @@ public class EstudianteDAO implements CRUD<Estudiante> {
             
             if (rs.next()) {
                 estudiante = new Estudiante();
-                estudiante.setId_estudiante(rs.getInt("id_estudiante"));
-                estudiante.setId_usu(rs.getInt("id_usu"));
+                estudiante.setId(rs.getInt("id_estudiante"));
+                estudiante.setIdUsuario(rs.getInt("id_usu"));
                 estudiante.setNombre(rs.getString("nombre"));
                 estudiante.setCorreo(rs.getString("correo"));
-                estudiante.setId_rol(rs.getInt("id_rol"));
-                estudiante.setFecha_creacion(rs.getDate("fecha_creacion"));
-                estudiante.setUltima_conexion(rs.getDate("ultima_conexion"));
-                estudiante.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
+                estudiante.setIdRol(rs.getInt("id_rol"));
+                estudiante.setFechaCreacion(rs.getDate("fecha_creacion"));
+                estudiante.setUltimaConexion(rs.getDate("ultima_conexion"));
+                estudiante.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
                 estudiante.setDireccion(rs.getString("direccion"));
                 estudiante.setTelefono(rs.getString("telefono"));
-                estudiante.setNumero_identificacion(rs.getString("numero_identificacion"));
+                estudiante.setNumeroIdentificacion(rs.getString("numero_identificacion"));
                 estudiante.setEstado(rs.getString("estado"));
-                estudiante.setPromedio_academico(rs.getFloat("promedio_academico"));
+                estudiante.setPromedioAcademico(rs.getFloat("promedio_academico"));
             }
             
         } catch (SQLException e) {
@@ -149,19 +149,19 @@ public class EstudianteDAO implements CRUD<Estudiante> {
             
             while (rs.next()) {
                 Estudiante estudiante = new Estudiante();
-                estudiante.setId_estudiante(rs.getInt("id_estudiante"));
-                estudiante.setId_usu(rs.getInt("id_usu"));
+                estudiante.setId(rs.getInt("id_estudiante"));
+                estudiante.setIdUsuario(rs.getInt("id_usu"));
                 estudiante.setNombre(rs.getString("nombre"));
                 estudiante.setCorreo(rs.getString("correo"));
-                estudiante.setId_rol(rs.getInt("id_rol"));
-                estudiante.setFecha_creacion(rs.getDate("fecha_creacion"));
-                estudiante.setUltima_conexion(rs.getDate("ultima_conexion"));
-                estudiante.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
+                estudiante.setIdRol(rs.getInt("id_rol"));
+                estudiante.setFechaCreacion(rs.getDate("fecha_creacion"));
+                estudiante.setUltimaConexion(rs.getDate("ultima_conexion"));
+                estudiante.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
                 estudiante.setDireccion(rs.getString("direccion"));
                 estudiante.setTelefono(rs.getString("telefono"));
-                estudiante.setNumero_identificacion(rs.getString("numero_identificacion"));
+                estudiante.setNumeroIdentificacion(rs.getString("numero_identificacion"));
                 estudiante.setEstado(rs.getString("estado"));
-                estudiante.setPromedio_academico(rs.getFloat("promedio_academico"));
+                estudiante.setPromedioAcademico(rs.getFloat("promedio_academico"));
                 estudiantes.add(estudiante);
             }
             
@@ -197,18 +197,18 @@ public class EstudianteDAO implements CRUD<Estudiante> {
             ps = conn.prepareStatement(sqlUsuario);
             ps.setString(1, estudiante.getNombre());
             ps.setString(2, estudiante.getCorreo());
-            ps.setInt(3, estudiante.getId_usu());
+            ps.setInt(3, estudiante.getIdUsuario());
             ps.executeUpdate();
             
             // Actualizar tabla ESTUDIANTE
             ps = conn.prepareStatement(sqlEstudiante);
-            ps.setDate(1, estudiante.getFecha_nacimiento() != null ? new java.sql.Date(estudiante.getFecha_nacimiento().getTime()) : null);
+            ps.setDate(1, estudiante.getFechaNacimiento() != null ? new java.sql.Date(estudiante.getFechaNacimiento().getTime()) : null);
             ps.setString(2, estudiante.getDireccion());
             ps.setString(3, estudiante.getTelefono());
-            ps.setString(4, estudiante.getNumero_identificacion());
+            ps.setString(4, estudiante.getNumeroIdentificacion());
             ps.setString(5, estudiante.getEstado());
-            ps.setFloat(6, estudiante.getPromedio_academico());
-            ps.setInt(7, estudiante.getId_estudiante());
+            ps.setFloat(6, estudiante.getPromedioAcademico());
+            ps.setInt(7, estudiante.getId());
             ps.executeUpdate();
             
             conn.commit();
