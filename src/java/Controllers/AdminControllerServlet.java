@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "AdminControllerServlet", urlPatterns = {"/admin/*"})
+@WebServlet(name = "AdminControllerServlet", urlPatterns = {"/api/admin/*"})
 public class AdminControllerServlet extends HttpServlet {
     
     private final ProfesorDAO profesorDAO;

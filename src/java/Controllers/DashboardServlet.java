@@ -1,7 +1,6 @@
 package Controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.servlet.ServletException;
@@ -11,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard/*"})
+@WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard", "/dashboard/", "/dashboard/admin/*", "/dashboard/profesor/*", "/dashboard/estudiante/*"})
 public class DashboardServlet extends HttpServlet {
 
     // Configuración de menús por rol
@@ -64,54 +63,86 @@ public class DashboardServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acceso no autorizado para este rol");
             return;
         }
+        
+        // Guardar los elementos del menú en la sesión para que estén disponibles en todas las páginas
+        session.setAttribute("menuItems", menuItems);
     
         // Obtener la ruta solicitada
         String pathInfo = request.getPathInfo();
         String requestURI = request.getRequestURI();
 
-        // Log only once per request
-        if (pathInfo != null && !pathInfo.equals("/index.jsp")) {
-            System.out.println("[DashboardServlet] Path solicitado: " + pathInfo);
-            System.out.println("[DashboardServlet] URI solicitada: " + requestURI);
-        }
+        // Log para depuración
+        System.out.println("[DashboardServlet] Path solicitado: " + pathInfo);
+        System.out.println("[DashboardServlet] URI solicitada: " + requestURI);
 
         // Página por defecto para el rol
-        String defaultPage = menuItems[0][2];
-        String targetPage = null;
-        boolean rutaValida = false;
-
-        // Si no hay pathInfo o es solo una barra, cargar menú en sesión y redirigir a /dashboard/index.jsp
+        String defaultPage = menuItems[0][2]; // Primera opción del menú
+        String targetPage = defaultPage;
+        
+        // Si no hay pathInfo o es solo una barra, usar la página por defecto
         if (pathInfo == null || pathInfo.equals("/")) {
-            session.setAttribute("menuItems", menuItems);
-            response.sendRedirect(request.getContextPath() + "/dashboard/index.jsp");
-            return;
-        } else if (pathInfo.equals("/index.jsp")) {
-            // Si la petición es a /dashboard/index.jsp, no hacer nada, dejar que el JSP maneje la vista principal
-            session.setAttribute("menuItems", menuItems);
-            response.sendRedirect(request.getContextPath() + "/dashboard/index.jsp");
-            return;
+            targetPage = defaultPage;
         } else {
-            // Verificar si la ruta está en el menú del usuario
-            for (String[] item : menuItems) {
-                if (pathInfo.equals(item[2]) || pathInfo.equals("/index.jsp")) {
-                    targetPage = item[2];
-                    rutaValida = true;
-                    break;
+            // Determinar el prefijo según el rol
+            String rolPrefix = "";
+            
+            if (userRol.equals("3")) {
+                rolPrefix = "/admin";
+            } else if (userRol.equals("2")) {
+                rolPrefix = "/profesor";
+            } else if (userRol.equals("1")) {
+                rolPrefix = "/estudiante";
+            }
+            
+            // Extraer el nombre del archivo JSP de la URI
+            String requestPath = requestURI;
+            String contextPath = request.getContextPath();
+            String dashboardPath = contextPath + "/dashboard";
+            
+            // Si la URI empieza con el path del dashboard, extraerla
+            if (requestPath.startsWith(dashboardPath)) {
+                String relativePath = requestPath.substring(dashboardPath.length());
+                
+                // Construir la ruta completa para buscarla en el menú
+                System.out.println("[DashboardServlet] Ruta extraída: " + relativePath);
+                
+                // Verificar si la ruta extraída corresponde a alguna del menú
+                boolean rutaValida = false;
+                
+                for (String[] item : menuItems) {
+                    System.out.println("[DashboardServlet] Comparando con: " + item[2]);
+                    if (relativePath.equals(item[2])) {
+                        targetPage = item[2];
+                        rutaValida = true;
+                        System.out.println("[DashboardServlet] ¡Coincidencia encontrada!: " + targetPage);
+                        break;
+                    }
+                }
+                
+                // Si no hay coincidencia exacta, intentar una coincidencia parcial
+                if (!rutaValida) {
+                    for (String[] item : menuItems) {
+                        if (relativePath.contains(item[2].substring(1))) { // Quitamos la primera barra "/"
+                            targetPage = item[2];
+                            rutaValida = true;
+                            System.out.println("[DashboardServlet] ¡Coincidencia parcial encontrada!: " + targetPage);
+                            break;
+                        }
+                    }
+                }
+                
+                // Si aún no hay coincidencia, usar la página por defecto
+                if (!rutaValida) {
+                    System.out.println("[DashboardServlet] No se encontró coincidencia, usando página por defecto");
                 }
             }
         }
-
-        if (!rutaValida) {
-            // Si la ruta no es válida, redirigir al dashboard principal
-            response.sendRedirect(request.getContextPath() + "/dashboard" + defaultPage);
-            return;
-        }
-
+        
         // Configurar atributos para la vista
         request.setAttribute("currentPath", targetPage);
-        request.setAttribute("includePage", targetPage); // Establecer la página a incluir
-        session.setAttribute("menuItems", menuItems);
-
+        request.setAttribute("includePage", targetPage);
+        System.out.println("[DashboardServlet] Estableciendo includePage: " + targetPage);
+        
         // Hacer forward al layout principal
         try {
             request.getRequestDispatcher("/dashboard/index.jsp").forward(request, response);
