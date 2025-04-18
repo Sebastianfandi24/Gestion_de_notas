@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `actividad` (
   `nombre` varchar(255) NOT NULL,
   `enlace` varchar(255) NOT NULL,
   PRIMARY KEY (`id_actividad`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `actividad`
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `administrador` (
   `fecha_ingreso` datetime DEFAULT NULL,
   PRIMARY KEY (`id_admin`),
   KEY `idUsuario` (`idUsuario`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `administrador`
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `curso` (
   PRIMARY KEY (`id_curso`),
   UNIQUE KEY `codigo` (`codigo`),
   KEY `idProfesor` (`idProfesor`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `curso`
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `curso_estudiante` (
   `id_estudiante` int NOT NULL,
   PRIMARY KEY (`id_curso`,`id_estudiante`),
   KEY `id_estudiante` (`id_estudiante`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `curso_estudiante`
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `estudiante` (
   PRIMARY KEY (`id_estudiante`),
   UNIQUE KEY `numero_identificacion` (`numero_identificacion`),
   KEY `idUsuario` (`idUsuario`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `estudiante`
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `gestion_actividades` (
   `id_actividad` int NOT NULL,
   PRIMARY KEY (`id_rol`,`id_actividad`),
   KEY `id_actividad` (`id_actividad`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `gestion_actividades`
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `nota_tarea` (
   PRIMARY KEY (`id_nota`),
   UNIQUE KEY `uk_tarea_estudiante` (`id_tarea`,`id_estudiante`),
   KEY `id_estudiante` (`id_estudiante`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `nota_tarea`
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `profesor` (
   `estado` enum('Activo','Baja') NOT NULL,
   PRIMARY KEY (`id_profesor`),
   KEY `idUsuario` (`idUsuario`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `profesor`
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `rol` (
   `nombre` varchar(50) NOT NULL,
   PRIMARY KEY (`id_rol`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `rol`
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `tarea` (
   `id_curso` int NOT NULL,
   PRIMARY KEY (`id_tarea`),
   KEY `id_curso` (`id_curso`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `tarea`
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   PRIMARY KEY (`id_usu`),
   UNIQUE KEY `correo` (`correo`),
   KEY `id_rol` (`id_rol`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
