@@ -2,6 +2,19 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <!-- Configuración del servlet de Dashboard -->
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>Controllers.DashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/dashboard</url-pattern>
+        <url-pattern>/dashboard/</url-pattern>
+        <url-pattern>/dashboard/admin/*</url-pattern>
+        <url-pattern>/dashboard/profesor/*</url-pattern>
+        <url-pattern>/dashboard/estudiante/*</url-pattern>
+    </servlet-mapping>
     
     <session-config>
         <session-timeout>30</session-timeout>

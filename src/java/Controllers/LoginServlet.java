@@ -53,15 +53,15 @@ public class LoginServlet extends HttpServlet {
                 switch (usuario.getIdRol()) {
                     case 3: // Administrador
                         System.out.println("[LoginServlet] Redirigiendo a dashboard de administrador");
-                        response.sendRedirect(request.getContextPath() + "/dashboard/admin/index.jsp");
+                        response.sendRedirect(request.getContextPath() + "/dashboard/");
                         break;
                     case 2: // Profesor
                         System.out.println("[LoginServlet] Redirigiendo a dashboard de profesor");
-                        response.sendRedirect(request.getContextPath() + "/dashboard/profesor/index.jsp");
+                        response.sendRedirect(request.getContextPath() + "/dashboard/");
                         break;
                     case 1: // Estudiante
                         System.out.println("[LoginServlet] Redirigiendo a dashboard de estudiante");
-                        response.sendRedirect(request.getContextPath() + "/dashboard/estudiante/index.jsp");
+                        response.sendRedirect(request.getContextPath() + "/dashboard/");
                         break;
                     default:
                         mensaje = "Rol no válido";

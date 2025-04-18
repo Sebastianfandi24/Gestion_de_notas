@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 17-04-2025 a las 03:37:13
+-- Tiempo de generación: 18-04-2025 a las 14:01:56
 -- Versión del servidor: 9.1.0
 -- Versión de PHP: 8.3.14
 
@@ -307,9 +307,9 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usu`, `nombre`, `correo`, `contraseña`, `id_rol`, `fecha_creacion`, `ultima_conexion`) VALUES
-(1, 'Admin User', 'admin@example.com', '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', 3, '2025-04-16 20:58:40', '2025-04-16 00:00:00'),
-(2, 'Profesor User', 'profesor@example.com', 'CFFA965D9FAA1D453F2D336294B029A7F84F485F75CE2A2C723065453B12B03B', 2, '2025-04-16 20:58:40', '2025-04-16 20:58:40'),
-(3, 'Estudiante User', 'estudiante@example.com', '2E63A1090735F47213FEA3B974418E3E42437325F313B3D3D2F6238CC22298F9', 1, '2025-04-16 20:58:40', '2025-04-16 20:58:40');
+(1, 'Admin User', 'admin@example.com', '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', 3, '2025-04-16 20:58:40', '2025-04-18 00:00:00'),
+(2, 'Profesor User', 'profesor@example.com', 'CFFA965D9FAA1D453F2D336294B029A7F84F485F75CE2A2C723065453B12B03B', 2, '2025-04-16 20:58:40', '2025-04-17 00:00:00'),
+(3, 'Estudiante User', 'estudiante@example.com', '2E63A1090735F47213FEA3B974418E3E42437325F313B3D3D2F6238CC22298F9', 1, '2025-04-16 20:58:40', '2025-04-17 00:00:00');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
