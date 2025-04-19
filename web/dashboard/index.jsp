@@ -366,11 +366,9 @@
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Título</th>
-                                                    <th>Curso</th>
-                                                    <th>Fecha Creación</th>
-                                                    <th>Fecha Entrega</th>
-                                                    <th>Estado</th>
+                                                    <th>Nombre</th>
+                                                    <th>Enlace</th>
+                                                    <th>Roles Asignados</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -1378,7 +1376,7 @@
                         { data: 'id_curso' },
                         { data: 'codigo' },
                         { data: 'nombre' },
-                        { data: 'nombreProfesor' },
+                        { data: 'profesor_nombre' },
                         { data: 'cantidadEstudiantes' },
                         {
                             data: null,
@@ -1414,11 +1412,16 @@
                     },
                     columns: [
                         { data: 'id_actividad' },
-                        { data: 'titulo' },
-                        { data: 'nombreCurso' },
-                        { data: 'fecha_creacion' },
-                        { data: 'fecha_entrega' },
-                        { data: 'estado' },
+                        { data: 'nombre' },
+                        { data: 'enlace' },
+                        { 
+                            data: 'roles',
+                            render: function(data) {
+                                return data.map(rol => 
+                                    `<span class="badge bg-info me-1">${rol.nombre}</span>`
+                                ).join('');
+                            }
+                        },
                         {
                             data: null,
                             render: function(data, type, row) {

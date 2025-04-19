@@ -7,6 +7,7 @@ public class Curso {
     private String descripcion;
     private int idProfesor;
     private String profesor_nombre; // Campo auxiliar para mostrar el nombre del profesor
+    private int cantidadEstudiantes; // Campo auxiliar para mostrar la cantidad de estudiantes
     
     public Curso() {}
     
@@ -73,5 +74,14 @@ public class Curso {
 
     public void setNombreProfesor(String nombreProfesor) {
         this.profesor_nombre = nombreProfesor;
+    }
+    
+    // Getters y setters para cantidadEstudiantes
+    public int getCantidadEstudiantes() {
+        return cantidadEstudiantes;
+    }
+    
+    public void setCantidadEstudiantes(int cantidadEstudiantes) {
+        this.cantidadEstudiantes = cantidadEstudiantes;
     }
 }

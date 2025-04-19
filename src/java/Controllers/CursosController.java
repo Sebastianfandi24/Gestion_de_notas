@@ -69,7 +69,8 @@ public class CursosController extends HttpServlet {
                         jsonCurso.put("codigo", curso.getCodigo());
                         jsonCurso.put("descripcion", curso.getDescripcion());
                         jsonCurso.put("id_profesor", curso.getIdProfesor());
-                        jsonCurso.put("profesor_nombre", curso.getNombreProfesor()); // Clave corregida
+                        jsonCurso.put("profesor_nombre", curso.getNombreProfesor()); 
+                        jsonCurso.put("cantidadEstudiantes", curso.getCantidadEstudiantes());
                         
                         jsonArray.put(jsonCurso);
                     }
@@ -92,6 +93,7 @@ public class CursosController extends HttpServlet {
                     jsonCurso.put("descripcion", curso.getDescripcion());
                     jsonCurso.put("id_profesor", curso.getIdProfesor());
                     jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
+                    jsonCurso.put("cantidadEstudiantes", curso.getCantidadEstudiantes());
                     
                     jsonArray.put(jsonCurso);
                 }
@@ -113,6 +115,7 @@ public class CursosController extends HttpServlet {
                     jsonCurso.put("descripcion", curso.getDescripcion());
                     jsonCurso.put("id_profesor", curso.getIdProfesor());
                     jsonCurso.put("nombre_profesor", curso.getNombreProfesor());
+                    jsonCurso.put("cantidadEstudiantes", curso.getCantidadEstudiantes());
                     
                     jsonArray.put(jsonCurso);
                 }

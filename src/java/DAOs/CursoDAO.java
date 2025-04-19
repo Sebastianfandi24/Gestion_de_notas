@@ -87,9 +87,11 @@ public class CursoDAO implements CRUD<Curso> {
     
     @Override
     public List<Curso> readAll() {
-        String sql = "SELECT c.*, u.nombre as profesor_nombre FROM CURSO c "
-                + "LEFT JOIN PROFESOR p ON c.idProfesor = p.id_profesor "
-                + "LEFT JOIN USUARIO u ON p.idUsuario = u.id_usu";
+        String sql = "SELECT c.*, u.nombre as profesor_nombre, " +
+                "(SELECT COUNT(*) FROM CURSO_ESTUDIANTE ce WHERE ce.id_curso = c.id_curso) AS cantidad_estudiantes " +
+                "FROM CURSO c " +
+                "LEFT JOIN PROFESOR p ON c.idProfesor = p.id_profesor " +
+                "LEFT JOIN USUARIO u ON p.idUsuario = u.id_usu";
         List<Curso> cursos = new ArrayList<>();
         
         try {
@@ -105,6 +107,7 @@ public class CursoDAO implements CRUD<Curso> {
                 curso.setDescripcion(rs.getString("descripcion"));
                 curso.setIdProfesor(rs.getInt("idProfesor"));
                 curso.setProfesor_nombre(rs.getString("profesor_nombre"));
+                curso.setCantidadEstudiantes(rs.getInt("cantidad_estudiantes"));
                 cursos.add(curso);
             }
             
@@ -245,10 +248,12 @@ public class CursoDAO implements CRUD<Curso> {
     }
     
     public List<Curso> getCursosPorProfesor(int idProfesor) {
-        String sql = "SELECT c.*, u.nombre as profesor_nombre FROM CURSO c "
-                + "LEFT JOIN PROFESOR p ON c.idProfesor = p.id_profesor "
-                + "LEFT JOIN USUARIO u ON p.idUsuario = u.id_usu "
-                + "WHERE c.idProfesor = ?";
+        String sql = "SELECT c.*, u.nombre as profesor_nombre, " +
+                "(SELECT COUNT(*) FROM CURSO_ESTUDIANTE ce WHERE ce.id_curso = c.id_curso) AS cantidad_estudiantes " +
+                "FROM CURSO c " +
+                "LEFT JOIN PROFESOR p ON c.idProfesor = p.id_profesor " +
+                "LEFT JOIN USUARIO u ON p.idUsuario = u.id_usu " +
+                "WHERE c.idProfesor = ?";
         List<Curso> cursos = new ArrayList<>();
         
         try {
@@ -265,6 +270,7 @@ public class CursoDAO implements CRUD<Curso> {
                 curso.setDescripcion(rs.getString("descripcion"));
                 curso.setIdProfesor(rs.getInt("idProfesor"));
                 curso.setProfesor_nombre(rs.getString("profesor_nombre"));
+                curso.setCantidadEstudiantes(rs.getInt("cantidad_estudiantes"));
                 cursos.add(curso);
             }
             
