@@ -333,44 +333,135 @@
 
     <script>
         let table;
+        let profesoresData = []; // Variable para almacenar los datos obtenidos
+        const logPrefix = "[ProfesoresJSP]";
+        
+        // Función para registro en consola
+        function log(level, message, data) {
+            const timestamp = new Date().toISOString();
+            
+            switch (level) {
+                case 'info':
+                    console.info(`${timestamp} ${logPrefix} INFO: ${message}`, data || '');
+                    break;
+                case 'warn':
+                    console.warn(`${timestamp} ${logPrefix} WARN: ${message}`, data || '');
+                    break;
+                case 'error':
+                    console.error(`${timestamp} ${logPrefix} ERROR: ${message}`, data || '');
+                    break;
+                default:
+                    console.log(`${timestamp} ${logPrefix} ${message}`, data || '');
+            }
+        }
 
-        $(document).ready(function() {
-            // Inicializar DataTable
-            table = $('#profesoresTable').DataTable({
-                ajax: {
-                    url: '${pageContext.request.contextPath}/ProfesoresController',
-                    dataSrc: ''
+        // Función para verificar la conexión al servidor
+        function verificarConexion() {
+            log('info', 'Verificando conexión con el servidor...');
+            
+            fetch('${pageContext.request.contextPath}/ProfesoresController', {
+                method: 'HEAD'
+            })
+            .then(response => {
+                if (response.ok) {
+                    log('info', `Conexión exitosa al servidor. Status: ${response.status}`);
+                } else {
+                    log('error', `Problemas con la conexión al servidor. Status: ${response.status}`);
+                    mostrarMensaje(`Hay problemas de conexión con el servidor. Código: ${response.status}`, 'danger');
+                }
+            })
+            .catch(error => {
+                log('error', 'Error al verificar la conexión con el servidor', error);
+                mostrarMensaje('No se puede conectar con el servidor. Verifique su conexión a internet.', 'danger');
+            });
+        }
+
+        // Función para cargar datos directamente sin usar DataTables para AJAX
+        function cargarDatosProfesores() {
+            const serverUrl = "${pageContext.request.contextPath}/ProfesoresController";
+            log('info', `Cargando datos de profesores desde: ${serverUrl}`);
+            
+            $.ajax({
+                url: serverUrl,
+                type: 'GET',
+                contentType: 'application/json',
+                success: function(data) {
+                    log('info', 'Datos recibidos correctamente:', data);
+                    profesoresData = data;
+                    inicializarTabla(profesoresData);
                 },
-                columns: [
-                    { data: 'id_profesor' },
-                    { data: 'nombre' },
-                    { data: 'correo' },
-                    { data: 'especializacion' },
-                    { data: 'estado' },
-                    {
-                        data: null,
-                        render: function(data, type, row) {
-                            return `
-                                <div class="action-buttons">
-                                    <button class="btn btn-sm btn-info" onclick="editarProfesor(${row.id_profesor})" title="Editar profesor">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="eliminarProfesor(${row.id_profesor})" title="Eliminar profesor">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>`;
-                        }
-                    }
-                ],
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                error: function(xhr, status, error) {
+                    log('error', 'Error al obtener datos de profesores:', { status, error });
+                    log('error', 'Detalles de la respuesta:', { 
+                        status: xhr.status, 
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText,
+                        url: serverUrl
+                    });
+                    
+                    let mensajeError = `Error al cargar datos: ${error}. URL: ${serverUrl}`;
+                    mostrarMensaje(mensajeError, 'danger');
                 }
             });
+        }
+
+        // Función para inicializar la tabla con datos ya cargados
+        function inicializarTabla(datos) {
+            log('info', 'Inicializando DataTable con datos precargados...');
+            try {
+                table = $('#profesoresTable').DataTable({
+                    data: datos,
+                    columns: [
+                        { data: 'id_profesor' },
+                        { data: 'nombre' },
+                        { data: 'correo' },
+                        { data: 'especializacion' },
+                        { data: 'estado' },
+                        {
+                            data: null,
+                            render: function(data, type, row) {
+                                return `
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-info" onclick="editarProfesor(${row.id_profesor})" title="Editar profesor">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="eliminarProfesor(${row.id_profesor})" title="Eliminar profesor">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>`;
+                            }
+                        }
+                    ],
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                    },
+                    processing: true,
+                    drawCallback: function() {
+                        log('info', 'DataTable dibujada correctamente');
+                    },
+                    initComplete: function() {
+                        log('info', 'DataTable inicializada completamente');
+                    }
+                });
+                
+                log('info', 'DataTable creada exitosamente');
+            } catch (error) {
+                log('error', 'Error al crear DataTable:', error);
+                mostrarMensaje('Error al inicializar la tabla de profesores: ' + error.message, 'danger');
+            }
+        }
+
+        $(document).ready(function() {
+            log('info', 'Página de profesores iniciada');
+            verificarConexion();
+            cargarDatosProfesores(); // Cargar datos y después inicializar la tabla
         });
 
         function guardarProfesor() {
+            log('info', 'Iniciando guardar profesor...');
             const profesor = {
-                id_profesor: $('#profesorId').val(),
+                id_profesor: $('#profesorId').val() || null,
+                id_usu: $('#usuarioId').val() || null,
                 nombre: $('#nombre').val(),
                 correo: $('#correo').val(),
                 fecha_nacimiento: $('#fechaNacimiento').val(),
@@ -382,57 +473,132 @@
                 direccion: $('#direccion').val()
             };
 
+            log('info', 'Datos del profesor a guardar:', profesor);
+
             $.ajax({
                 url: '${pageContext.request.contextPath}/ProfesoresController',
                 type: profesor.id_profesor ? 'PUT' : 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(profesor),
+                beforeSend: function() {
+                    log('info', `Enviando petición ${profesor.id_profesor ? 'PUT' : 'POST'} al servidor...`);
+                },
                 success: function(response) {
+                    log('info', 'Respuesta exitosa:', response);
                     $('#profesorModal').modal('hide');
-                    table.ajax.reload();
+                    // Recargar datos en lugar de usar table.ajax.reload()
+                    cargarDatosProfesores();
                     mostrarMensaje('Profesor guardado exitosamente', 'success');
                 },
                 error: function(xhr, status, error) {
-                    mostrarMensaje('Error al guardar el profesor: ' + error, 'danger');
+                    log('error', 'Error en la solicitud guardarProfesor:', { status, error });
+                    log('error', 'Respuesta del servidor:', xhr.responseText);
+                    
+                    let mensajeError = 'Error al guardar el profesor: ' + error;
+                    
+                    try {
+                        if (xhr.responseText) {
+                            const jsonResponse = JSON.parse(xhr.responseText);
+                            if (jsonResponse.error) {
+                                mensajeError += '. Detalle: ' + jsonResponse.error;
+                            }
+                        }
+                    } catch (e) {
+                        log('warn', 'No se pudo parsear la respuesta como JSON', e);
+                    }
+                    
+                    mostrarMensaje(mensajeError, 'danger');
                 }
             });
         }
 
         function editarProfesor(id) {
-            $.get('${pageContext.request.contextPath}/ProfesoresController?id=' + id, function(profesor) {
-                $('#profesorId').val(profesor.id_profesor);
-                $('#nombre').val(profesor.nombre);
-                $('#correo').val(profesor.correo);
-                $('#fechaNacimiento').val(profesor.fecha_nacimiento);
-                $('#telefono').val(profesor.telefono);
-                $('#gradoAcademico').val(profesor.grado_academico);
-                $('#especializacion').val(profesor.especializacion);
-                $('#fechaContratacion').val(profesor.fecha_contratacion);
-                $('#estado').val(profesor.estado);
-                $('#direccion').val(profesor.direccion);
-                
-                $('#modalTitle').text('Editar Profesor');
-                $('#profesorModal').modal('show');
+            log('info', 'Editando profesor ID:', id);
+            $.ajax({
+                url: '${pageContext.request.contextPath}/ProfesoresController?id=' + id,
+                type: 'GET',
+                beforeSend: function() {
+                    log('info', `Solicitando datos del profesor ID: ${id}`);
+                },
+                success: function(profesor) {
+                    log('info', 'Datos del profesor recibidos:', profesor);
+                    $('#profesorId').val(profesor.id_profesor);
+                    $('#usuarioId').val(profesor.id_usu);
+                    $('#nombre').val(profesor.nombre);
+                    $('#correo').val(profesor.correo);
+                    $('#fechaNacimiento').val(profesor.fecha_nacimiento);
+                    $('#telefono').val(profesor.telefono);
+                    $('#gradoAcademico').val(profesor.grado_academico);
+                    $('#especializacion').val(profesor.especializacion);
+                    $('#fechaContratacion').val(profesor.fecha_contratacion);
+                    $('#estado').val(profesor.estado);
+                    $('#direccion').val(profesor.direccion);
+                    
+                    $('#modalTitle').text('Editar Profesor');
+                    $('#profesorModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    log('error', 'Error al obtener datos del profesor:', { status, error });
+                    log('error', 'Respuesta del servidor:', xhr.responseText);
+                    
+                    let mensajeError = 'Error al cargar datos del profesor: ' + error;
+                    
+                    try {
+                        if (xhr.responseText) {
+                            const jsonResponse = JSON.parse(xhr.responseText);
+                            if (jsonResponse.error) {
+                                mensajeError += '. Detalle: ' + jsonResponse.error;
+                            }
+                        }
+                    } catch (e) {
+                        log('warn', 'No se pudo parsear la respuesta como JSON', e);
+                    }
+                    
+                    mostrarMensaje(mensajeError, 'danger');
+                }
             });
         }
 
         function eliminarProfesor(id) {
             if (confirm('¿Está seguro de que desea eliminar este profesor?')) {
+                log('info', 'Eliminando profesor ID:', id);
                 $.ajax({
                     url: '${pageContext.request.contextPath}/ProfesoresController?id=' + id,
                     type: 'DELETE',
+                    beforeSend: function() {
+                        log('info', `Solicitando eliminación del profesor ID: ${id}`);
+                    },
                     success: function(response) {
-                        table.ajax.reload();
+                        log('info', 'Respuesta de eliminación:', response);
+                        // Recargar datos en lugar de usar table.ajax.reload()
+                        cargarDatosProfesores();
                         mostrarMensaje('Profesor eliminado exitosamente', 'success');
                     },
                     error: function(xhr, status, error) {
-                        mostrarMensaje('Error al eliminar el profesor: ' + error, 'danger');
+                        log('error', 'Error al eliminar profesor:', { status, error });
+                        log('error', 'Respuesta del servidor:', xhr.responseText);
+                        
+                        let mensajeError = 'Error al eliminar el profesor: ' + error;
+                        
+                        try {
+                            if (xhr.responseText) {
+                                const jsonResponse = JSON.parse(xhr.responseText);
+                                if (jsonResponse.error) {
+                                    mensajeError += '. Detalle: ' + jsonResponse.error;
+                                }
+                            }
+                        } catch (e) {
+                            log('warn', 'No se pudo parsear la respuesta como JSON', e);
+                        }
+                        
+                        mostrarMensaje(mensajeError, 'danger');
                     }
                 });
             }
         }
 
         function mostrarMensaje(mensaje, tipo) {
+            log(tipo === 'success' ? 'info' : 'warn', 'Mostrando mensaje: ' + mensaje);
             const icon = tipo === 'success' ? 'check-circle' : 'exclamation-circle';
             const alertDiv = $(`<div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
                 <i class="fas fa-${icon} me-2"></i>${mensaje}
@@ -444,9 +610,22 @@
         }
 
         $('#profesorModal').on('hidden.bs.modal', function() {
+            log('info', 'Modal de profesor cerrado');
             $('#profesorForm')[0].reset();
             $('#profesorId').val('');
+            $('#usuarioId').val('');
             $('#modalTitle').text('Nuevo Profesor');
+        });
+
+        // Adicionar un campo oculto para el ID de usuario en el modal
+        $(document).ready(function() {
+            if ($('#usuarioId').length === 0) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'usuarioId',
+                    name: 'usuarioId'
+                }).appendTo('#profesorForm');
+            }
         });
     </script>
 </body>

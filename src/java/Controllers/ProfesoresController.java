@@ -1,13 +1,15 @@
 package Controllers;
 
 import Models.Profesor;
-import DAOs.ProfesorDAO; // Added missing import
+import DAOs.ProfesorDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException; // Added import
-import java.text.SimpleDateFormat; // Added import
-import java.util.Date; // Added import
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,11 +25,15 @@ import org.json.JSONObject;
 public class ProfesoresController extends HttpServlet {
 
     private final ProfesorDAO profesorDAO;
-    private final SimpleDateFormat dateFormat; // Added SimpleDateFormat instance
+    private final SimpleDateFormat dateFormat;
+    private final SimpleDateFormat dateTimeFormat;
+    private static final Logger LOGGER = Logger.getLogger(ProfesoresController.class.getName());
 
     public ProfesoresController() {
         this.profesorDAO = new ProfesorDAO();
-        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Initialize SimpleDateFormat
+        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        this.dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        LOGGER.info("ProfesoresController inicializado");
     }
     
     /**
@@ -39,58 +45,86 @@ public class ProfesoresController extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
+        LOGGER.info("ProfesoresController: recibida solicitud GET");
+        
         try (PrintWriter out = response.getWriter()) {
             String idParam = request.getParameter("id");
             
             if (idParam != null) {
                 // Obtener un profesor específico
+                LOGGER.info("ProfesoresController: solicitando profesor con ID: " + idParam);
                 int id = Integer.parseInt(idParam);
                 Profesor profesor = obtenerProfesorPorId(id);
                 
                 if (profesor != null) {
-                    JSONObject jsonProfesor = new JSONObject();
-                    jsonProfesor.put("id_profesor", profesor.getId());
-                    jsonProfesor.put("nombre", profesor.getNombre());
-                    jsonProfesor.put("correo", profesor.getCorreo());
-                    jsonProfesor.put("fecha_nacimiento", profesor.getFechaNacimiento());
-                    jsonProfesor.put("telefono", profesor.getTelefono());
-                    jsonProfesor.put("grado_academico", profesor.getGradoAcademico());
-                    jsonProfesor.put("especializacion", profesor.getEspecializacion());
-                    jsonProfesor.put("fecha_contratacion", profesor.getFechaContratacion());
-                    jsonProfesor.put("estado", profesor.getEstado());
-                    jsonProfesor.put("direccion", profesor.getDireccion());
-                    
+                    LOGGER.info("ProfesoresController: profesor encontrado. Convirtiendo a JSON");
+                    JSONObject jsonProfesor = profesorToJson(profesor);
+                    LOGGER.fine("ProfesoresController: JSON generado: " + jsonProfesor.toString());
                     out.print(jsonProfesor.toString());
                 } else {
+                    LOGGER.warning("ProfesoresController: profesor con ID " + id + " no encontrado");
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     out.print(new JSONObject().put("error", "Profesor no encontrado").toString());
                 }
             } else {
                 // Obtener todos los profesores
+                LOGGER.info("ProfesoresController: solicitando todos los profesores");
                 List<Profesor> profesores = obtenerTodosProfesores();
                 JSONArray jsonArray = new JSONArray();
                 
+                LOGGER.info("ProfesoresController: se encontraron " + profesores.size() + " profesores");
                 for (Profesor profesor : profesores) {
-                    JSONObject jsonProfesor = new JSONObject();
-                    jsonProfesor.put("id_profesor", profesor.getId());
-                    jsonProfesor.put("nombre", profesor.getNombre());
-                    jsonProfesor.put("correo", profesor.getCorreo());
-                    jsonProfesor.put("fecha_nacimiento", profesor.getFechaNacimiento());
-                    jsonProfesor.put("telefono", profesor.getTelefono());
-                    jsonProfesor.put("grado_academico", profesor.getGradoAcademico());
-                    jsonProfesor.put("especializacion", profesor.getEspecializacion());
-                    jsonProfesor.put("fecha_contratacion", profesor.getFechaContratacion());
-                    jsonProfesor.put("estado", profesor.getEstado());
-                    jsonProfesor.put("direccion", profesor.getDireccion());
-                    
-                    jsonArray.put(jsonProfesor);
+                    jsonArray.put(profesorToJson(profesor));
                 }
                 
+                LOGGER.fine("ProfesoresController: Array JSON generado: " + jsonArray.toString());
                 out.print(jsonArray.toString());
             }
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "ProfesoresController: Error en doGet", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
+        }
+    }
+
+    /**
+     * Convierte un objeto Profesor a formato JSON
+     */
+    private JSONObject profesorToJson(Profesor profesor) {
+        try {
+            JSONObject jsonProfesor = new JSONObject();
+            jsonProfesor.put("id_profesor", profesor.getId());
+            jsonProfesor.put("id_usu", profesor.getId_usu());
+            jsonProfesor.put("nombre", profesor.getNombre());
+            jsonProfesor.put("correo", profesor.getCorreo());
+            
+            // Formatear fecha de nacimiento (date)
+            if (profesor.getFechaNacimiento() != null) {
+                jsonProfesor.put("fecha_nacimiento", dateFormat.format(profesor.getFechaNacimiento()));
+            } else {
+                jsonProfesor.put("fecha_nacimiento", JSONObject.NULL);
+            }
+            
+            jsonProfesor.put("telefono", profesor.getTelefono() != null ? profesor.getTelefono() : "");
+            jsonProfesor.put("grado_academico", profesor.getGradoAcademico() != null ? profesor.getGradoAcademico() : "");
+            jsonProfesor.put("especializacion", profesor.getEspecializacion() != null ? profesor.getEspecializacion() : "");
+            
+            // Formatear fecha de contratación (datetime)
+            if (profesor.getFechaContratacion() != null) {
+                jsonProfesor.put("fecha_contratacion", dateFormat.format(profesor.getFechaContratacion()));
+                LOGGER.fine("ProfesoresController: Fecha contratación formateada: " + dateFormat.format(profesor.getFechaContratacion()));
+            } else {
+                jsonProfesor.put("fecha_contratacion", JSONObject.NULL);
+                LOGGER.fine("ProfesoresController: Fecha contratación es NULL");
+            }
+            
+            jsonProfesor.put("estado", profesor.getEstado() != null ? profesor.getEstado() : "");
+            jsonProfesor.put("direccion", profesor.getDireccion() != null ? profesor.getDireccion() : "");
+            
+            return jsonProfesor;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al convertir profesor a JSON", e);
+            throw e;
         }
     }
 
@@ -102,6 +136,7 @@ public class ProfesoresController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        LOGGER.info("ProfesoresController: recibida solicitud POST");
 
         try {
             // Leer el cuerpo de la solicitud
@@ -110,8 +145,12 @@ public class ProfesoresController extends HttpServlet {
             while ((line = request.getReader().readLine()) != null) {
                 sb.append(line);
             }
+            
+            String requestBody = sb.toString();
+            LOGGER.info("ProfesoresController: Cuerpo de la solicitud recibido: " + requestBody);
 
-            JSONObject jsonRequest = new JSONObject(sb.toString());
+            JSONObject jsonRequest = new JSONObject(requestBody);
+            LOGGER.info("ProfesoresController: JSON recibido: " + jsonRequest.toString());
 
             // Crear objeto Profesor
             Profesor profesor = new Profesor();
@@ -123,38 +162,59 @@ public class ProfesoresController extends HttpServlet {
             profesor.setEstado(jsonRequest.optString("estado", "Activo"));
             profesor.setDireccion(jsonRequest.optString("direccion", null));
             profesor.setIdRol(2); // Assuming Rol 2 is Profesor
+            
+            LOGGER.info("ProfesoresController: Objeto profesor creado: " + profesor.getNombre() + " - " + profesor.getCorreo());
 
             // Parse dates
             String fechaNacStr = jsonRequest.optString("fecha_nacimiento", null);
             if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
                 try {
+                    LOGGER.info("ProfesoresController: Parseando fecha de nacimiento: " + fechaNacStr);
                     profesor.setFechaNacimiento(dateFormat.parse(fechaNacStr));
                 } catch (ParseException e) {
+                    LOGGER.log(Level.SEVERE, "ProfesoresController: Error al parsear fecha de nacimiento", e);
                     throw new ServletException("Formato de fecha de nacimiento inválido", e);
                 }
+            } else {
+                LOGGER.info("ProfesoresController: Sin fecha de nacimiento");
             }
 
             String fechaContratacionStr = jsonRequest.optString("fecha_contratacion", null);
             if (fechaContratacionStr != null && !fechaContratacionStr.isEmpty()) {
                 try {
-                    profesor.setFechaContratacion(dateFormat.parse(fechaContratacionStr));
+                    LOGGER.info("ProfesoresController: Parseando fecha de contratación: " + fechaContratacionStr);
+                    // Agregar la hora si solo se proporciona la fecha
+                    if (fechaContratacionStr.length() == 10) { // formato yyyy-MM-dd
+                        fechaContratacionStr += " 00:00:00";
+                        profesor.setFechaContratacion(dateTimeFormat.parse(fechaContratacionStr));
+                        LOGGER.info("ProfesoresController: Fecha contratación con hora añadida: " + fechaContratacionStr);
+                    } else {
+                        profesor.setFechaContratacion(dateTimeFormat.parse(fechaContratacionStr));
+                    }
                 } catch (ParseException e) {
+                    LOGGER.log(Level.SEVERE, "ProfesoresController: Error al parsear fecha de contratación", e);
                     throw new ServletException("Formato de fecha de contratación inválido", e);
                 }
+            } else {
+                LOGGER.info("ProfesoresController: Sin fecha de contratación");
             }
 
             // Guardar el profesor
+            LOGGER.info("ProfesoresController: Creando profesor: " + profesor.getNombre());
             boolean exito = crearProfesor(profesor);
 
             if (exito) {
+                LOGGER.info("ProfesoresController: Profesor creado exitosamente");
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 response.getWriter().print(new JSONObject().put("mensaje", "Profesor creado exitosamente").toString());
             } else {
+                LOGGER.severe("ProfesoresController: Error al crear el profesor");
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().print(new JSONObject().put("error", "Error al crear el profesor").toString());
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Changed to BAD_REQUEST for parsing errors
+            LOGGER.log(Level.SEVERE, "ProfesoresController: Error general en doPost", e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
@@ -167,6 +227,7 @@ public class ProfesoresController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        LOGGER.info("ProfesoresController: recibida solicitud PUT");
 
         try {
             // Leer el cuerpo de la solicitud
@@ -176,12 +237,16 @@ public class ProfesoresController extends HttpServlet {
                 sb.append(line);
             }
 
-            JSONObject jsonRequest = new JSONObject(sb.toString());
+            String requestBody = sb.toString();
+            LOGGER.info("ProfesoresController: Cuerpo de la solicitud recibido: " + requestBody);
+
+            JSONObject jsonRequest = new JSONObject(requestBody);
+            LOGGER.info("ProfesoresController: JSON recibido para actualización: " + jsonRequest.toString());
 
             // Crear objeto Profesor
             Profesor profesor = new Profesor();
-            profesor.setId(jsonRequest.getInt("id_profesor")); // Use setId for the primary key
-            profesor.setIdUsu(jsonRequest.getInt("id_usu")); // Need id_usu for update
+            profesor.setId(jsonRequest.getInt("id_profesor"));
+            profesor.setIdUsu(jsonRequest.getInt("id_usu"));
             profesor.setNombre(jsonRequest.getString("nombre"));
             profesor.setCorreo(jsonRequest.getString("correo"));
             profesor.setTelefono(jsonRequest.optString("telefono", null));
@@ -190,37 +255,58 @@ public class ProfesoresController extends HttpServlet {
             profesor.setEstado(jsonRequest.optString("estado", "Activo"));
             profesor.setDireccion(jsonRequest.optString("direccion", null));
 
+            LOGGER.info("ProfesoresController: Objeto profesor creado para actualización: " + profesor.getNombre());
+
             // Parse dates
             String fechaNacStr = jsonRequest.optString("fecha_nacimiento", null);
             if (fechaNacStr != null && !fechaNacStr.isEmpty()) {
                 try {
+                    LOGGER.info("ProfesoresController: Parseando fecha de nacimiento: " + fechaNacStr);
                     profesor.setFechaNacimiento(dateFormat.parse(fechaNacStr));
                 } catch (ParseException e) {
+                    LOGGER.log(Level.SEVERE, "ProfesoresController: Error al parsear fecha de nacimiento", e);
                     throw new ServletException("Formato de fecha de nacimiento inválido", e);
                 }
+            } else {
+                LOGGER.info("ProfesoresController: Sin fecha de nacimiento");
             }
 
             String fechaContratacionStr = jsonRequest.optString("fecha_contratacion", null);
             if (fechaContratacionStr != null && !fechaContratacionStr.isEmpty()) {
                 try {
-                    profesor.setFechaContratacion(dateFormat.parse(fechaContratacionStr));
+                    LOGGER.info("ProfesoresController: Parseando fecha de contratación: " + fechaContratacionStr);
+                    // Agregar la hora si solo se proporciona la fecha
+                    if (fechaContratacionStr.length() == 10) { // formato yyyy-MM-dd
+                        fechaContratacionStr += " 00:00:00";
+                        profesor.setFechaContratacion(dateTimeFormat.parse(fechaContratacionStr));
+                        LOGGER.info("ProfesoresController: Fecha contratación con hora añadida: " + fechaContratacionStr);
+                    } else {
+                        profesor.setFechaContratacion(dateTimeFormat.parse(fechaContratacionStr));
+                    }
                 } catch (ParseException e) {
+                    LOGGER.log(Level.SEVERE, "ProfesoresController: Error al parsear fecha de contratación", e);
                     throw new ServletException("Formato de fecha de contratación inválido", e);
                 }
+            } else {
+                LOGGER.info("ProfesoresController: Sin fecha de contratación");
             }
 
             // Actualizar el profesor
+            LOGGER.info("ProfesoresController: Actualizando profesor ID: " + profesor.getId());
             boolean exito = actualizarProfesor(profesor);
 
             if (exito) {
+                LOGGER.info("ProfesoresController: Profesor actualizado exitosamente");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().print(new JSONObject().put("mensaje", "Profesor actualizado exitosamente").toString());
             } else {
+                LOGGER.severe("ProfesoresController: Error al actualizar el profesor");
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().print(new JSONObject().put("error", "Error al actualizar el profesor").toString());
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Changed to BAD_REQUEST for parsing errors
+            LOGGER.log(Level.SEVERE, "ProfesoresController: Error en doPut", e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
@@ -233,35 +319,38 @@ public class ProfesoresController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        LOGGER.info("ProfesoresController: recibida solicitud DELETE");
         
         try {
             String idParam = request.getParameter("id");
             
             if (idParam != null) {
                 int id = Integer.parseInt(idParam);
+                LOGGER.info("ProfesoresController: Eliminando profesor ID: " + id);
                 boolean exito = eliminarProfesor(id);
                 
                 if (exito) {
+                    LOGGER.info("ProfesoresController: Profesor eliminado exitosamente");
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().print(new JSONObject().put("mensaje", "Profesor eliminado exitosamente").toString());
                 } else {
+                    LOGGER.severe("ProfesoresController: Error al eliminar el profesor");
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     response.getWriter().print(new JSONObject().put("error", "Error al eliminar el profesor").toString());
                 }
             } else {
+                LOGGER.warning("ProfesoresController: ID de profesor no proporcionado");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().print(new JSONObject().put("error", "ID de profesor no proporcionado").toString());
             }
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "ProfesoresController: Error en doDelete", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().print(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
     
     // Métodos auxiliares para interactuar con la base de datos
-    
-    // Removed duplicate ProfesorDAO instance
-
     private Profesor obtenerProfesorPorId(int id) {
         return profesorDAO.read(id);
     }

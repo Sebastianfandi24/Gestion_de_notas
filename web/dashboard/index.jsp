@@ -1280,7 +1280,7 @@
                 // Inicializar DataTable para profesores
                 $('#profesoresTable').DataTable({
                     ajax: {
-                        url: '${pageContext.request.contextPath}/api/admin/profesores',
+                        url: '${pageContext.request.contextPath}/ProfesoresController',
                         dataSrc: ''
                     },
                     columns: [
@@ -1333,7 +1333,7 @@
                 // Inicializar DataTable para estudiantes
                 $('#estudiantesTable').DataTable({
                     ajax: {
-                        url: '${pageContext.request.contextPath}/api/admin/estudiantes',
+                        url: '${pageContext.request.contextPath}/EstudiantesController',
                         dataSrc: ''
                     },
                     columns: [
@@ -1371,7 +1371,7 @@
                 // Inicializar DataTable para cursos
                 $('#cursosTable').DataTable({
                     ajax: {
-                        url: '${pageContext.request.contextPath}/api/admin/cursos',
+                        url: '${pageContext.request.contextPath}/CursosController',
                         dataSrc: ''
                     },
                     columns: [
@@ -1409,7 +1409,7 @@
                 // Inicializar DataTable para actividades
                 $('#actividadesTable').DataTable({
                     ajax: {
-                        url: '${pageContext.request.contextPath}/api/admin/actividades',
+                        url: '${pageContext.request.contextPath}/ActividadesController',
                         dataSrc: ''
                     },
                     columns: [
